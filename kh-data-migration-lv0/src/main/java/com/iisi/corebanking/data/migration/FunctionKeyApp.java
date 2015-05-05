@@ -19,6 +19,7 @@ public class FunctionKeyApp {
 	String mnemonic = "";
 	String msgEQU = "";
 	String msgVNV = "";
+	String msgV2V = "";
 	String msgVSV = "";
 	String msgVNN = "";
 	String msgSFV = "";
@@ -71,6 +72,9 @@ public class FunctionKeyApp {
 				case "VNV":
 					valueNdvalue(settings.getProperty(runFnKey), oneRecordMap);
 					break;
+				case "V2V":
+					valueNdvalueLv2(settings.getProperty(runFnKey), oneRecordMap);
+					break;
 				case "VSV":
 					valuesEqOrLsvalue(settings.getProperty(runFnKey), oneRecordMap);
 					break;
@@ -96,6 +100,7 @@ public class FunctionKeyApp {
 				msgEQU+lineSeperator+lineSeperator+
 				"====When A has value, B also has value"+lineSeperator+
 				msgVNV+lineSeperator+lineSeperator+
+				msgV2V+lineSeperator+lineSeperator+
 				"====When A has value, A also has equals or more then B"+lineSeperator+
 				msgVSV+lineSeperator+lineSeperator+
 				"====When A has value, B cannot have value"+lineSeperator+
@@ -126,10 +131,12 @@ public class FunctionKeyApp {
 			contrast_B = oneRecordMap.get(conditionIntList.get(i+1));
 			if((contrast_A == "" &&  contrast_B == "")||
 					(contrast_A != "" &&  contrast_B != "")){
-				msgVNV += "["+contrast_A +"and" +contrast_B+"], ";
+				msgVNN += "["+contrast_A +"and" +contrast_B+"], ";
 			}
 		}
 	}
+	
+	
 
 	private void valueNdvalue(String condition, HashMap<Integer,String> oneRecordMap) {
 		addToList(conditionIntList, condition);
@@ -143,7 +150,34 @@ public class FunctionKeyApp {
 					(contrast_A != "" &&  contrast_B == "")){
 				msgVNV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
 			}
+		}
+	}
+	
+	private void valueNdvalueLv2(String condition, HashMap<Integer,String> oneRecordMap) {
+		addToList(conditionIntList, condition);
+		String contrast_A ;
+		String contrast_B ;
+		for (int i = 0 ; i < conditionIntList.size() ; i += 2) {
+			contrast_A = oneRecordMap.get(conditionIntList.get(i));
+			contrast_B = oneRecordMap.get(conditionIntList.get(i+1));
+			String[] contrastArry_A =contrast_A.split("::");
+			String[] contrastArry_B =contrast_B.split("::");
 			
+			if((contrastArry_A.length != contrastArry_B.length) ||
+					(contrast_A == "" &&  contrast_B != "")||
+					(contrast_A != "" &&  contrast_B == "")){
+				msgV2V += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+			} else {
+				int countAmount = contrastArry_A.length;
+				for (int ii = 0 ; ii <countAmount ; ii++) {
+					int a = contrastArry_A[ii].split("!!").length;
+					int b = contrastArry_B[ii].split("!!").length;
+					if (a != b) {
+						msgV2V += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+						break;
+					}
+				}
+			}
 		}
 	}
 	

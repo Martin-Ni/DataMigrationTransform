@@ -202,6 +202,7 @@ public class DataTransformer {
 			
 			if (allLinesBMap.containsKey(lineAList.get(mapFieldSetA.get(0)))) {
 				lineAList.set(mapFieldInsertSetA.get(0),allLinesBMap.get(lineAList.get(mapFieldSetA.get(0))));
+				allLinesBMap.remove(lineAList.get(mapFieldSetA.get(0)));
 				//allLinesBMap.put(lineAList.get(mapFieldSetA.get(0)),"warning6");
 			} else {
 				//lineAList.set(mapFieldInsertSetA.get(0),allLinesBMap.get(lineAList.get(mapFieldSetA.get(0)))+MAP_NULL_ERRO_DEFAULT);//value will be replace by null
