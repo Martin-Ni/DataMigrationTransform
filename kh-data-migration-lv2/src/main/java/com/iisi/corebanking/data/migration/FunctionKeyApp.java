@@ -209,19 +209,19 @@ public class FunctionKeyApp {
 	}
 	
 	public String fn_EmailFormat(String configSingleValue) {
-		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
+		//String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
+		int emailField = 60;
+		String originalString = "_";
+		String replaceString = "'_'";
+		if (lineList.get(emailField) != "" && lineList.get(emailField).indexOf(originalString.trim()) >= 0) {
+			lineList.set(emailField, areplace(lineList.get(emailField), originalString, replaceString, lineList.get(emailField).indexOf(originalString)));
+		}
+		
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
 				customer.append(FIELD_DELIMITER);
 			}
-			
-			if (i != Integer.parseInt(putArray[0])){
-				customer.append(lineList.get(i));
-			} else if (lineList.get(i) != "" && lineList.get(i).indexOf(putArray[1].trim()) >= 0){
-				customer.append(areplace(lineList.get(60), putArray[1].trim(), putArray[2].trim(), lineList.get(60).indexOf("_")));
-			} else {
-				customer.append(lineList.get(i));
-			}
+			customer.append(lineList.get(i));
 		}
 		customer.append(lineSeperator);
 		return "";
