@@ -219,6 +219,8 @@ public class DataTransformer {
 			count++;
 			System.out.println(count);
 		}
+		output.append(lineSeperator+allLinesBMap);
+		
 		// Write to output file
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
 			bw.write(output.toString());
