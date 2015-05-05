@@ -203,8 +203,8 @@ public class DataTransformer {
 				} else if (configSingleValue.equalsIgnoreCase("LIMIT")){
 					String toaString = functionKeyApp.fn_limitZero(configSingleValue);
 					holdString = toaString;
-				} else if (configSingleValue.equalsIgnoreCase("EMAIL")){
-					String toaString = functionKeyApp.fn_EmailFormat(configSingleValue);
+				} else if (configSingleValue.equalsIgnoreCase("CUSTOMER")){
+					String toaString = functionKeyApp.fn_CustomerFormat(configSingleValue);
 					holdString = toaString;
 				} else if (configSingleValue.equalsIgnoreCase("GROUP")){
 					String toaString = functionKeyApp.fn_GroupFormat(configSingleValue);

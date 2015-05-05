@@ -404,27 +404,12 @@ public class DataTransformer {
 			default:
 				throw new IllegalArgumentException("Invalid fieldTypeIndicator: " + fieldTypeIndicator);
 			}
-			int checkLength = currentField.indexOf(replaceString);
-			if (checkLength <= cutLengthInt){
-				int start = 0;
-				int end = 0;
-				while (end != currentField.length()) {
-					start = currentField.indexOf(replaceString, end);
-					end = currentField.indexOf(replaceString, start + replaceString.length());
-					if (end < 0) {
-						end = currentField.length();
-					}
-					if(end-(start+replaceString.length()) > cutLengthInt){
-						processedFieldData.append(LENGTH_EXCEEDED_DEFAULT_MSG+ "-"+whichField + " ] ");
-						break;
-					}
-				}
-			} else {
-				processedFieldData.append(LENGTH_EXCEEDED_DEFAULT_MSG+ "-"+whichField + " ] ");
-			}
 			
 			String[] splitStringList = currentField.split(replaceString);
 			for(int i = 0 ; i < splitStringList.length ; i++){
+				if (splitStringList[i].trim().length() > cutLengthInt){
+					processedFieldData.append(LENGTH_EXCEEDED_DEFAULT_MSG+ "-"+whichField + " ] ");
+				}
 				processedFieldData.append(splitStringList[i].trim());
 				if (i != splitStringList.length-1) {
 					processedFieldData.append(delimiter);

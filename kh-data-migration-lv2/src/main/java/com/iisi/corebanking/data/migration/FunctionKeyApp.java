@@ -208,7 +208,7 @@ public class FunctionKeyApp {
 		return customer.toString();
 	}
 	
-	public String fn_EmailFormat(String configSingleValue) {
+	public String fn_CustomerFormat(String configSingleValue) {
 		//String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		int emailField = 60;
 		String originalString = "_";
@@ -216,6 +216,13 @@ public class FunctionKeyApp {
 		if (lineList.get(emailField) != "" && lineList.get(emailField).indexOf(originalString.trim()) >= 0) {
 			lineList.set(emailField, areplace(lineList.get(emailField), originalString, replaceString, lineList.get(emailField).indexOf(originalString)));
 		}
+		
+		int streetField = 6;
+		int addressField = 7; 
+		String addressString = lineList.get(addressField);
+		int addrStgDlmtrPosition = addressString.indexOf("::"); 
+		String newStreet = addrStgDlmtrPosition >= 0 ? addressString.substring(0, addrStgDlmtrPosition) : addressString;
+		lineList.set(streetField, newStreet);
 		
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
