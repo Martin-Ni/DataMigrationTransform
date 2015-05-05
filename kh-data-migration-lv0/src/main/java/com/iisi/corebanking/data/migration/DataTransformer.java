@@ -316,7 +316,7 @@ public class DataTransformer {
 				sortMap(whichLine, mappingDataLineAndField)+lineSeperator+lineSeperator+
 				*/
 				
-				"Part8===for function key==test== "+
+				"Part8===for function key==== "+
 				(String)(!this.settings.getProperty("fn","").equals("") ? fnKey.getMsg()+lineSeperator : "")
 				);
 

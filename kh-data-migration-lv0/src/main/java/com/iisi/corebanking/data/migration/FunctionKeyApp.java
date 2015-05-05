@@ -19,6 +19,7 @@ public class FunctionKeyApp {
 	String mnemonic = "";
 	String msgEQU = "";
 	String msgVNV = "";
+	String msgVSV = "";
 	String msgVNN = "";
 	String msgSFV = "";
 	int ix = 0;
@@ -70,6 +71,9 @@ public class FunctionKeyApp {
 				case "VNV":
 					valueNdvalue(settings.getProperty(runFnKey), oneRecordMap);
 					break;
+				case "VSV":
+					valuesEqOrLsvalue(settings.getProperty(runFnKey), oneRecordMap);
+					break;
 				case "VNN":
 					valueNdNull(settings.getProperty(runFnKey), oneRecordMap);
 					break;
@@ -92,6 +96,8 @@ public class FunctionKeyApp {
 				msgEQU+lineSeperator+lineSeperator+
 				"====When A has value, B also has value"+lineSeperator+
 				msgVNV+lineSeperator+lineSeperator+
+				"====When A has value, A also has equals or more then B"+lineSeperator+
+				msgVSV+lineSeperator+lineSeperator+
 				"====When A has value, B cannot have value"+lineSeperator+
 				msgVNN+lineSeperator+lineSeperator+
 				"====The substring is not match the fix value"+lineSeperator+
@@ -140,6 +146,21 @@ public class FunctionKeyApp {
 			
 		}
 	}
+	
+	private void valuesEqOrLsvalue(String condition, HashMap<Integer,String> oneRecordMap) {
+		addToList(conditionIntList, condition);
+		String contrast_A ;
+		String contrast_B ;
+		for(int i = 0 ; i < conditionIntList.size() ; i += 2){
+			contrast_A = oneRecordMap.get(conditionIntList.get(i));
+			contrast_B = oneRecordMap.get(conditionIntList.get(i+1));
+			if ((contrast_A.split("::").length < contrast_B.split("::").length)) {
+				msgVSV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+			}
+			
+		}
+	}
+	
 
 	private void subStringEqSubString(String condition, HashMap<Integer,String> oneRecordMap){
 		addToList(conditionIntList, condition);
