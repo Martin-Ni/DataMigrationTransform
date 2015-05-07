@@ -315,7 +315,7 @@ public class FunctionKeyApp {
 	}
 
 	private BigDecimal getBigDecimal(String moneyInput){
-		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(2,BigDecimal.ROUND_DOWN);
+		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(4,BigDecimal.ROUND_DOWN);
 		return moneyOutput;
 	}
 	
