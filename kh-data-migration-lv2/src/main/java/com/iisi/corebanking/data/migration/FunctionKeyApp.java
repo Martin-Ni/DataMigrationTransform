@@ -65,8 +65,11 @@ public class FunctionKeyApp {
 	public String fn_TOAJudge(String configSingleValue, String uploadCompanyCode){
 
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
-		BigDecimal availableBalance = getBigDecimal((this.lineList.get(Integer.parseInt(putArray[0])).trim()));
-		BigDecimal zero = getBigDecimal("0");
+		
+		//BigDecimal availableBalance = getBigDecimal((this.lineList.get(Integer.parseInt(putArray[0])).trim()));
+		BigDecimal availableBalance = new BigDecimal(this.lineList.get(Integer.parseInt(putArray[0])).trim());
+		//BigDecimal zero = getBigDecimal("0");
+		BigDecimal zero = new BigDecimal("0");
 		
 		String toaJudgeString = "";
 		String lessMsg="";
@@ -95,9 +98,12 @@ public class FunctionKeyApp {
 	
 	public String fn_combine2FieldValue(String configSingleValue){
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
-		BigDecimal availableBalance = getBigDecimal(this.lineList.get(Integer.parseInt(putArray[0].trim())));
-		BigDecimal freezeAmount = getBigDecimal(this.lineList.get(Integer.parseInt(putArray[1].trim())));
-		String combineString = availableBalance.add(freezeAmount).toString();
+		//BigDecimal availableBalance = getBigDecimal(this.lineList.get(Integer.parseInt(putArray[0].trim())));
+		BigDecimal availableBalance = new BigDecimal(this.lineList.get(Integer.parseInt(putArray[0].trim())));
+		//BigDecimal freezeAmount = getBigDecimal(this.lineList.get(Integer.parseInt(putArray[1].trim())));
+		BigDecimal freezeAmount = new BigDecimal(this.lineList.get(Integer.parseInt(putArray[1].trim())));
+		
+		String combineString = getBigDecimal(availableBalance.add(freezeAmount).toString()).toString();
 		return combineString;
 	}
 	
@@ -169,9 +175,12 @@ public class FunctionKeyApp {
 					}
 					
 					if (i == 16 || i == 25 || i == 27) {
-						BigDecimal oldAmount = getBigDecimal(oldlineList.get(i));
-						BigDecimal newAmount = getBigDecimal(lineList.get(i));
-						lineList.set(i, (oldAmount.add(newAmount).toString())) ;
+						//BigDecimal oldAmount = getBigDecimal(oldlineList.get(i));
+						BigDecimal oldAmount = new BigDecimal(oldlineList.get(i));
+						//BigDecimal newAmount = getBigDecimal(lineList.get(i));
+						BigDecimal newAmount = new BigDecimal(lineList.get(i));
+						
+						lineList.set(i, getBigDecimal(oldAmount.add(newAmount).toString()).toString()) ;
 					}
 				}
 				for (int i = 0 ; i < oldlineList.size() ; i++) {
@@ -254,7 +263,7 @@ public class FunctionKeyApp {
 			}
 			
 			newValue += getContrastValue;
-			if (amountCut > 1) {
+			if (amountCut > 1 && getContrastValue != "") {
 				for (int plus = 1 ; plus < amountCut ; plus++) {
 					newValue += putArray[0];
 					newValue += getContrastValue;
@@ -315,12 +324,12 @@ public class FunctionKeyApp {
 	}
 
 	private BigDecimal getBigDecimal(String moneyInput){
-		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(4,BigDecimal.ROUND_DOWN);
+		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(2, BigDecimal.ROUND_HALF_UP);
 		return moneyOutput;
 	}
 	
 	private BigDecimal getBigDecimalNoPoint(String moneyInput){
-		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(0,BigDecimal.ROUND_DOWN);
+		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(0,BigDecimal.ROUND_HALF_UP);
 		return moneyOutput;
 	}
 	
