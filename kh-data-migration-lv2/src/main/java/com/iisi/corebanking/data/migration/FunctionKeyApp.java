@@ -263,7 +263,7 @@ public class FunctionKeyApp {
 			}
 			
 			newValue += getContrastValue;
-			if (amountCut > 1 && getContrastValue != "") {
+			if (amountCut > 1 && !getContrastValue.equals("")) {
 				for (int plus = 1 ; plus < amountCut ; plus++) {
 					newValue += putArray[0];
 					newValue += getContrastValue;
