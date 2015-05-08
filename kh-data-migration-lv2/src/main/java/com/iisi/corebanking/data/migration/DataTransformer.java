@@ -200,6 +200,10 @@ public class DataTransformer {
 					String toaString = functionKeyApp.fn_onlyTOAInsert(configSingleValue, uploadCompanyCode);
 					holdString += toaString;
 					
+				} else if (configSingleValue.substring(0,4).equalsIgnoreCase("BTOA")){
+					String toaString = functionKeyApp.fn_branchTOAInsert(configSingleValue);
+					holdString += toaString;
+					
 				} else if (configSingleValue.equalsIgnoreCase("LIMIT")){
 					String toaString = functionKeyApp.fn_limitZero(configSingleValue);
 					holdString = toaString;

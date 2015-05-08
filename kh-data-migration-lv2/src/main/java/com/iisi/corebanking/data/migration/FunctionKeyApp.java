@@ -75,12 +75,19 @@ public class FunctionKeyApp {
 		String lessMsg="";
 		String moreAndEqualMsg="";
 		
+		String toaConditionString = uploadCompanyCode;
+		String currencyCodeString = this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
+		
 		if(putArray[2].trim().equalsIgnoreCase("TOA")){
 			lessMsg = this.lineList.get(Integer.parseInt(putArray[1]));
-			moreAndEqualMsg = getTOAString(lessMsg, uploadCompanyCode);
+			String branchCodeString = lessMsg.substring(0,3);
+			String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
+			moreAndEqualMsg = getTOAString(toaCondition);
 		}else if (putArray[1].trim().equalsIgnoreCase("TOA")){
 			moreAndEqualMsg = this.lineList.get(Integer.parseInt(putArray[2]));
-			lessMsg = getTOAString(moreAndEqualMsg, uploadCompanyCode);
+			String branchCodeString = moreAndEqualMsg.substring(0,3);
+			String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
+			lessMsg = getTOAString(toaCondition);
 		}
 		
 		if (availableBalance.compareTo(zero) < 0){
@@ -92,7 +99,7 @@ public class FunctionKeyApp {
 	}
 	
 	public String fn_negateValue(String configSingleValue){
-		String negateString = getBigDecimal(getIndexOrValue(configSingleValue, this.lineList)).negate().toString();
+		String negateString = getBigDecimal(getIndexOrValue(configSingleValue, this.lineList)).toString();//.negate().toString();
 		return negateString;
 	}
 	
@@ -108,7 +115,19 @@ public class FunctionKeyApp {
 	}
 	
 	public String fn_onlyTOAInsert(String configSingleValue, String uploadCompanyCode){
-		String toaString = getTOAString(getIndexOrValue(configSingleValue, this.lineList), uploadCompanyCode);
+		String toaConditionString = uploadCompanyCode;
+		String branchCodeString = getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
+		String currencyCodeString = this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
+		String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
+		String toaString = getTOAString(toaCondition);
+		return toaString;
+	}
+	
+	public String fn_branchTOAInsert(String configSingleValue){
+		String branchCodeString = getIndexOrValue(configSingleValue, this.lineList);
+		String currencyCodeString = this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
+		String toaCondition = branchCodeString+currencyCodeString;
+		String toaString = getTOAString(toaCondition);
 		return toaString;
 	}
 	
@@ -306,9 +325,8 @@ public class FunctionKeyApp {
 	
 	
 	
-	private String getTOAString (String CompanyCode, String uploadCompanyCode){
-		String toaStringKey= uploadCompanyCode+CompanyCode.substring(0,3)+this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
-		toaStringKey=settingTOA.getProperty(toaStringKey);
+	private String getTOAString (String toaStringKey){
+		toaStringKey = settingTOA.getProperty(toaStringKey);
 		return toaStringKey;
 	}
 	
