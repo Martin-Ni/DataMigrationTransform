@@ -14,6 +14,7 @@ public class FunctionKeyApp {
 	//private final Properties settingsMsg;
 	private final Set<String> setFunKey;
 	private final ArrayList<Integer> conditionIntList;
+	private final ArrayList<String> conditionStringList;
 	private final Set<String> setContent;
 	
 	String mnemonic = "";
@@ -23,6 +24,8 @@ public class FunctionKeyApp {
 	String msgVSV = "";
 	String msgVNN = "";
 	String msgSFV = "";
+	String msgFVNValue = "";
+	String msgFVNBlank = "";
 	int ix = 0;
 	
 	public FunctionKeyApp(String outputFileLineSeperator, Properties settings, Properties settingsMsg, char DELIMITER){
@@ -32,6 +35,7 @@ public class FunctionKeyApp {
 		this.FIELD_DELIMITER = DELIMITER;
 		this.setFunKey = new HashSet<String>();		
 		this.conditionIntList = new ArrayList<Integer>();
+		this.conditionStringList = new ArrayList<String>();
 		this.setContent = new HashSet<String>();
 		addStringToSet(setFunKey, settings .getProperty("fn"));
 		
@@ -53,6 +57,17 @@ public class FunctionKeyApp {
 		for (String idx : indices) {
 			try {
 				set.add(Integer.parseInt(idx.trim()));
+			} catch (NumberFormatException e) {
+				// do nothing, the Set remains empty
+			}
+		}
+	}
+	
+	private void addToListString(ArrayList<String> set, String commaDelimitedIndices) {
+		String[] indices = commaDelimitedIndices.split(",");
+		for (String idx : indices) {
+			try {
+				set.add(idx.trim());
 			} catch (NumberFormatException e) {
 				// do nothing, the Set remains empty
 			}
@@ -84,8 +99,12 @@ public class FunctionKeyApp {
 				case "SFV":
 					substringFixValue(settings.getProperty(runFnKey), oneRecordMap);
 					break;
+				case "FVN":
+					fixAndValueOrBlank(settings.getProperty(runFnKey), oneRecordMap);
+					break;
 				}
 				conditionIntList.clear();
+				conditionStringList.clear();
 				setContent.clear();
 			}
 		}
@@ -106,7 +125,11 @@ public class FunctionKeyApp {
 				"====When A has value, B cannot have value"+lineSeperator+
 				msgVNN+lineSeperator+lineSeperator+
 				"====The substring is not match the fix value"+lineSeperator+
-				msgSFV+lineSeperator+lineSeperator
+				msgSFV+lineSeperator+lineSeperator+
+				"====If A equals fixed value, B need to have the Value"+lineSeperator+
+				msgFVNValue+lineSeperator+lineSeperator+
+				"====If A equals fixed value, B need to have the Blank"+lineSeperator+
+				msgFVNBlank+lineSeperator+lineSeperator
 				).toString();
 		
 	}
@@ -146,7 +169,7 @@ public class FunctionKeyApp {
 			contrast_A = oneRecordMap.get(conditionIntList.get(i));
 			contrast_B = oneRecordMap.get(conditionIntList.get(i+1));
 			if((contrast_A.split("::").length != contrast_B.split("::").length) ||
-					(contrast_A == "" &&  contrast_B != "")||
+					(contrast_A == "" &&  contrast_B != "") ||
 					(contrast_A != "" &&  contrast_B == "")){
 				msgVNV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
 			}
@@ -206,6 +229,33 @@ public class FunctionKeyApp {
 			if (!contrast_A.equals(contrast_B)){
 				msgEQU +="["+oneRecordMap.get(conditionIntList.get(i))+"not match "+oneRecordMap.get(conditionIntList.get(i+3))+"]-"+this.mnemonic+", ";
 			}
+		}
+	}
+	
+	private void fixAndValueOrBlank(String condition, HashMap<Integer,String> oneRecordMap){
+		addToListString(conditionStringList, condition);//FVN= ValueOrBlank, 1, Y, 3
+		switch (conditionStringList.get(0)) {
+		case "VALUE":
+			for (int i = 1 ; i < conditionStringList.size() ; i += 3) {
+				String ifValueOfThisFile = oneRecordMap.get(Integer.parseInt(conditionStringList.get(i)));
+				String theValueIsThisValue = conditionStringList.get(i+1);
+				String thisFileNeedToValue = oneRecordMap.get(Integer.parseInt(conditionStringList.get(i+2))); 
+				if (ifValueOfThisFile.equals(theValueIsThisValue) && thisFileNeedToValue.equals("")) {
+					msgFVNValue += "["+conditionStringList.get(i)+":"+conditionStringList.get(i+2)+" should be Value ] "+this.mnemonic+", ";
+				}
+			}
+			break;
+			
+		case "BLANK":
+			for (int i = 1 ; i < conditionStringList.size() ; i += 3) {
+				String ifValueOfThisFile = oneRecordMap.get(Integer.parseInt(conditionStringList.get(i)));
+				String theValueIsThisValue = conditionStringList.get(i+1);
+				String thisFileNeedToBlank = oneRecordMap.get(Integer.parseInt(conditionStringList.get(i+2))); 
+				if (ifValueOfThisFile.equals(theValueIsThisValue) && !thisFileNeedToBlank.equals("")) {
+					msgFVNBlank += "["+conditionStringList.get(i)+":"+conditionStringList.get(i+2)+" should be Blank ] "+this.mnemonic+", ";
+				}
+			}
+			break;
 		}
 	}
 	
