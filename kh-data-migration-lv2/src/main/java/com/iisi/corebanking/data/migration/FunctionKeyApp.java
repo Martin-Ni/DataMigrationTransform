@@ -249,7 +249,8 @@ public class FunctionKeyApp {
 		int addressField = 7; 
 		String addressString = lineList.get(addressField);
 		int addrStgDlmtrPosition = addressString.indexOf("::"); 
-		String newStreet = addrStgDlmtrPosition >= 0 ? addressString.substring(0, addrStgDlmtrPosition) : addressString;
+		//String newStreet = addrStgDlmtrPosition >= 0 ? addressString.substring(0, addrStgDlmtrPosition) : addressString;
+		String newStreet = addrStgDlmtrPosition > 35 ? addressString.substring(0, 35) : addressString;
 		lineList.set(streetField, newStreet);
 		
 		for (int i = 0 ; i < lineList.size() ; i++) {
@@ -290,6 +291,56 @@ public class FunctionKeyApp {
 			}
 			lineList.set(Integer.parseInt(putArray[pair+1].trim()), newValue);
 			
+			newValue = "";
+			getContrastValue = "";
+		}
+		
+		for (int i = 0 ; i < lineList.size() ; i++) {
+			if (i != 0) {
+				group.append(FIELD_DELIMITER);
+			}
+			group.append(lineList.get(i));
+		}
+		group.append(lineSeperator);
+		return "";
+	}
+	
+	
+	StringBuilder groupIB = new StringBuilder();
+	public String fn_getIBFormat() {
+		return group.toString();
+	}
+	
+	public String fn_IBFormat(String configSingleValue) {
+		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
+		String getContrastValue = "";
+		String newValue = "";
+		for (int pair = 1 ; pair < putArray.length ; pair += 2){
+			String[] stringCut = lineList.get(Integer.parseInt(putArray[pair].trim())).split(putArray[0]);
+			int amountCut = stringCut.length;
+			getContrastValue = lineList.get(Integer.parseInt(putArray[pair+1].trim()));
+			
+			//newValue += getContrastValue;
+			if (amountCut > 1 && !getContrastValue.equals("")) {
+				for (int plus = 0 ; plus < amountCut ; plus++) {
+					if (plus != 0) {
+						newValue += putArray[0];
+					}
+					if ( stringCut[plus].indexOf("FUNDS.TRANSFER") != -1 || stringCut[plus].indexOf("BILL.PAYMENT") != -1 ) {
+						newValue += getContrastValue;
+					}
+				}
+				
+				boolean check = true ;
+				while(check){
+					if (newValue.substring(newValue.length()-1, newValue.length()).equals(":")){
+						newValue = newValue.substring(0, newValue.length()-1);
+					} else {
+						check = false;
+					}
+				}
+			}
+			lineList.set(Integer.parseInt(putArray[pair+1].trim()), newValue);
 			newValue = "";
 			getContrastValue = "";
 		}

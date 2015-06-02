@@ -213,6 +213,9 @@ public class DataTransformer {
 				} else if (configSingleValue.equalsIgnoreCase("GROUP")){
 					String toaString = functionKeyApp.fn_GroupFormat(configSingleValue);
 					holdString = toaString;
+				} else if (configSingleValue.equalsIgnoreCase("IBGROUP")){
+					String toaString = functionKeyApp.fn_IBFormat(configSingleValue);
+					holdString = toaString;
 				} else {
 					holdString += "[Warning21]Cannot work";
 					
@@ -226,10 +229,12 @@ public class DataTransformer {
 		}
 		if (fileOfNewFileList.get(0).equalsIgnoreCase("LIMIT")) {
 			output.append(functionKeyApp.fn_getLimitZero());
-		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("EMAIL")) {
+		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("CUSTOMER")) {
 			output.append(functionKeyApp.fn_getEmailFormat());
 		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("GROUP")) {
 			output.append(functionKeyApp.fn_getGroupFormat());
+		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("IBGROUP")) {
+			output.append(functionKeyApp.fn_getIBFormat());
 		}
 		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
