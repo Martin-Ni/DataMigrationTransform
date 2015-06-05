@@ -248,7 +248,7 @@ public class FunctionKeyApp {
 		int streetField = 6;
 		int addressField = 7; 
 		String addressString = lineList.get(addressField);
-		int addrStgDlmtrPosition = addressString.indexOf("::"); 
+		int addrStgDlmtrPosition = addressString.length(); 
 		//String newStreet = addrStgDlmtrPosition >= 0 ? addressString.substring(0, addrStgDlmtrPosition) : addressString;
 		String newStreet = addrStgDlmtrPosition > 35 ? addressString.substring(0, 35) : addressString;
 		lineList.set(streetField, newStreet);
