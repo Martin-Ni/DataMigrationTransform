@@ -269,6 +269,8 @@ public class FunctionKeyApp {
 		return group.toString();
 	}
 	
+
+	
 	public String fn_GroupFormat(String configSingleValue) {
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		String getContrastValue = "";
@@ -294,6 +296,12 @@ public class FunctionKeyApp {
 			newValue = "";
 			getContrastValue = "";
 		}
+		
+		String replaceCondition = getIndexOrValue("A", null).trim();
+		if (!replaceCondition.equals("")){
+			fn_Replace(replaceCondition);
+		}
+		
 		
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
@@ -374,13 +382,23 @@ public class FunctionKeyApp {
 		return newContent.toString();
 	}
 	
-	
+	private void fn_Replace(String replaceCondition){
+		String[] replaceConditionArray = replaceCondition.split("\\|");
+		for (int i = 0 ; i < replaceConditionArray.length ; i+=3) {
+			int whichField = Integer.parseInt(replaceConditionArray[i].trim()); 
+			String oldString = replaceConditionArray[i+1].trim();
+			String newString = replaceConditionArray[i+2].trim();
+			lineList.set(whichField, lineList.get(whichField).replace(oldString, newString));
+		}		
+	}
 	
 	private String getTOAString (String toaStringKey){
 		toaStringKey = settingTOA.getProperty(toaStringKey);
 		return toaStringKey;
 	}
 	
+	
+
 	
 	private String getIndexOrValue (String configSingleValue, List<String> lineList){
 		String configFieldValue;
