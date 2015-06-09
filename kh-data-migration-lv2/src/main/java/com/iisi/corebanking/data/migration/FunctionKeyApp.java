@@ -329,12 +329,12 @@ public class FunctionKeyApp {
 			getContrastValue = lineList.get(Integer.parseInt(putArray[pair+1].trim()));
 			
 			//newValue += getContrastValue;
-			if (amountCut > 1 && !getContrastValue.equals("")) {
+			if (amountCut >= 1 && !getContrastValue.equals("")) {
 				for (int plus = 0 ; plus < amountCut ; plus++) {
 					if (plus != 0) {
 						newValue += putArray[0];
 					}
-					if ( stringCut[plus].indexOf("FUNDS.TRANSFER") != -1 || stringCut[plus].indexOf("BILL.PAYMENT") != -1 ) {
+					if ( stringCut[plus].indexOf("FUND.TRANSFER") != -1 || stringCut[plus].indexOf("BILL.PAYMENT") != -1 ) {
 						newValue += getContrastValue;
 					}
 				}
