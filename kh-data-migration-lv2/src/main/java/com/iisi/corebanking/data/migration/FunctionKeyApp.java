@@ -269,8 +269,6 @@ public class FunctionKeyApp {
 		return group.toString();
 	}
 	
-
-	
 	public String fn_GroupFormat(String configSingleValue) {
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		String getContrastValue = "";
@@ -360,6 +358,27 @@ public class FunctionKeyApp {
 			group.append(lineList.get(i));
 		}
 		group.append(lineSeperator);
+		return "";
+	}
+	
+	StringBuilder stringByReplace = new StringBuilder();
+	public String fn_getReplaceInterface() {
+		return stringByReplace.toString();
+	}
+	public String fn_ReplaceInterface() {
+		String replaceCondition = getIndexOrValue("A", null).trim();
+		if (!replaceCondition.equals("")) {
+			fn_Replace(replaceCondition);
+		}
+		
+		for (int i = 0 ; i < lineList.size() ; i++) {
+			if (i != 0) {
+				stringByReplace.append(FIELD_DELIMITER);
+			}
+			stringByReplace.append(lineList.get(i));
+		}
+		stringByReplace.append(lineSeperator);
+		
 		return "";
 	}
 	

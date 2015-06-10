@@ -216,6 +216,9 @@ public class DataTransformer {
 				} else if (configSingleValue.equalsIgnoreCase("IBGROUP")){
 					String toaString = functionKeyApp.fn_IBFormat(configSingleValue);
 					holdString = toaString;
+				} else if (configSingleValue.equalsIgnoreCase("REPLACE")){
+					String toaString = functionKeyApp.fn_ReplaceInterface();
+					holdString = toaString;
 				} else {
 					holdString += "[Warning21]Cannot work";
 					
@@ -235,6 +238,8 @@ public class DataTransformer {
 			output.append(functionKeyApp.fn_getGroupFormat());
 		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("IBGROUP")) {
 			output.append(functionKeyApp.fn_getIBFormat());
+		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("REPLACE")) {
+			output.append(functionKeyApp.fn_getReplaceInterface());
 		}
 		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
