@@ -294,7 +294,10 @@ public class DataTransformer {
 			// acquire field data
 			String currentFieldData = list.get(i);
 			// skip following logic if the data is empty
-			if (currentFieldData.length() == 0) {
+			if (settings.getProperty(i+"G", "") != "") {
+				processedRecord.append(settings.getProperty(i+"G", ""));
+				continue;
+			} else if (currentFieldData.length() == 0) {
 				processedRecord.append(currentFieldData);
 				continue;
 			}
