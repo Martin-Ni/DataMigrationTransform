@@ -26,6 +26,7 @@ public class FunctionKeyApp {
 	String msgSFV = "";
 	String msgFVNValue = "";
 	String msgFVNBlank = "";
+	String msgTCT = "";
 	int ix = 0;
 	
 	public FunctionKeyApp(String outputFileLineSeperator, Properties settings, Properties settingsMsg, char DELIMITER){
@@ -102,6 +103,9 @@ public class FunctionKeyApp {
 				case "FVN":
 					fixAndValueOrBlank(settings.getProperty(runFnKey), oneRecordMap);
 					break;
+				case "TCT":
+					timeCheckTime(settings.getProperty(runFnKey), oneRecordMap);
+					break;
 				}
 				conditionIntList.clear();
 				conditionStringList.clear();
@@ -129,7 +133,9 @@ public class FunctionKeyApp {
 				"====If A equals fixed value, B need to have the Value"+lineSeperator+
 				msgFVNValue+lineSeperator+lineSeperator+
 				"====If A equals fixed value, B need to have the Blank"+lineSeperator+
-				msgFVNBlank+lineSeperator+lineSeperator
+				msgFVNBlank+lineSeperator+lineSeperator+
+				"====Check the time "+lineSeperator+
+				msgTCT+lineSeperator+lineSeperator
 				).toString();
 		
 	}
@@ -258,5 +264,108 @@ public class FunctionKeyApp {
 			break;
 		}
 	}
+	
+	int aa= 0;
+	private void timeCheckTime (String condition, HashMap<Integer,String> oneRecordMap) {
+		addToListString(conditionStringList, condition); //TCT: 0, 0, 8, <=, 1, 0, 8 ~loop
+		String msgStart = "";
+		for (int i = 0 ; i < conditionStringList.size() ; i += 7) {
+			String Date_A_String = setTime(conditionStringList.get(i), Integer.parseInt(conditionStringList.get(i+1)), Integer.parseInt(conditionStringList.get(i+2)), oneRecordMap);
+			String Date_B_String = setTime(conditionStringList.get(i+4), Integer.parseInt(conditionStringList.get(i+5)), Integer.parseInt(conditionStringList.get(i+6)), oneRecordMap);
+
+			if (Date_A_String == "" || Date_B_String == "" || Date_A_String == null ||Date_A_String == null){
+				continue;
+			}
+			int Date_A = Integer.parseInt(Date_A_String);
+			int Date_B = Integer.parseInt(Date_B_String);
+
+			switch (conditionStringList.get(i+3)) {
+				case "<=":
+					if (Date_A > Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be <= "+Date_B + " | ";
+					}
+					break;
+
+				case "=<":
+					if (Date_A > Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be <= "+Date_B + " | ";
+					}
+					break;
+					
+				case "<":
+					if (Date_A >= Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be >= "+Date_B + " | ";
+					}
+					break;
+			
+				case "==":
+					if (Date_A != Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be == "+Date_B + " | ";
+					}
+					break;
+
+				case ">":
+					if (Date_A <= Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be > "+Date_B + " | ";
+					}
+					break;
+
+				case ">=":
+					if (Date_A < Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be >= "+Date_B + " | ";
+					} 
+					break;
+					
+				case "=>":
+					if (Date_A < Date_B){
+						msgStart += 
+								conditionStringList.get(i) +" "+
+								conditionStringList.get(i+3)+" "+
+								conditionStringList.get(i+4) +" : "+
+								Date_A +" should be => "+Date_B + " | ";
+					}
+					break;
+			}
+		}
+		msgTCT += msgStart != "" ? msgStart +" - "+ this.mnemonic + ", " : "";
+	}
+	
+	
+	private String setTime (String condition, int start, int end, HashMap<Integer,String> oneRecordMap){
+		if (condition.equals("MD")) {
+			condition = "20150627";
+		} else if (condition.length() == 8) {
+			
+		} else {
+			condition = oneRecordMap.get(Integer.parseInt(condition)) != "" ? oneRecordMap.get(Integer.parseInt(condition)).substring(start,end) : oneRecordMap.get(condition);
+		}
+		
+		return condition;
+	}
+	
 	
 }
