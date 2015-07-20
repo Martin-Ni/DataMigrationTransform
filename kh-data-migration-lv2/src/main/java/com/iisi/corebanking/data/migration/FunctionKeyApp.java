@@ -163,7 +163,7 @@ public class FunctionKeyApp {
 			}
 			Limit_formatLine_Parent += lineSeperator;
 		} else {
-			if (expiryDateValue >= expiryDateIndex){
+			/*if (expiryDateValue >= expiryDateIndex){*/
 				for (int i = 0 ; i < lineList.size() ; i++) {
 					if (i != 0) {
 						Limit_formatLine_Child += FIELD_DELIMITER;
@@ -171,7 +171,7 @@ public class FunctionKeyApp {
 					Limit_formatLine_Child += lineList.get(i);
 				}
 				Limit_formatLine_Child += lineSeperator;
-			}
+			/*}*/
 			
 			String key = limitRef.substring(0, limitRef.lastIndexOf(".") 
 					- getContrastValue.length())
@@ -238,21 +238,27 @@ public class FunctionKeyApp {
 	
 	public String fn_CustomerFormat(String configSingleValue) {
 		//String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
+		/*
 		int emailField = 60;
 		String originalString = "_";
 		String replaceString = "'_'";
 		if (lineList.get(emailField) != "" && lineList.get(emailField).indexOf(originalString.trim()) >= 0) {
 			lineList.set(emailField, areplace(lineList.get(emailField), originalString, replaceString, lineList.get(emailField).indexOf(originalString)));
-		}
+		}*/
 		
+		String replaceCondition = getIndexOrValue("A", null).trim();
+		if (!replaceCondition.equals("")){
+			fn_Replace(replaceCondition);
+		}
+		/*
 		int streetField = 6;
 		int addressField = 7; 
 		String addressString = lineList.get(addressField);
 		int addrStgDlmtrPosition = addressString.length(); 
 		//String newStreet = addrStgDlmtrPosition >= 0 ? addressString.substring(0, addrStgDlmtrPosition) : addressString;
-		String newStreet = addrStgDlmtrPosition > 35 ? addressString.substring(0, 35) : addressString;
+		String newStreet = addrStgDlmtrPosition > 33 ? addressString.substring(0, 33) : addressString;
 		lineList.set(streetField, newStreet);
-		
+		*/
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
 				customer.append(FIELD_DELIMITER);

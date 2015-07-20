@@ -365,7 +365,7 @@ public class DataTransformer {
 		// Reconstruct delimited field data
 		String cutData = "";
 		StringBuilder processedFieldData = new StringBuilder();
-		StringBuilder empty = new StringBuilder();
+		
 		for (int i = 0; i * cutLengthInt < currentField.length(); i++) {
 			if (i != 0) {
 				processedFieldData.append(delimiter);
@@ -376,6 +376,7 @@ public class DataTransformer {
 			if ((cutData.substring(0,1).equals("/") || cutData.substring(0,1).equals("-")) && i != 0) {
 				cutLengthInt--;
 				i = -1;
+				StringBuilder empty = new StringBuilder();
 				processedFieldData = empty;
 			} else {
 				processedFieldData.append(cutData);
