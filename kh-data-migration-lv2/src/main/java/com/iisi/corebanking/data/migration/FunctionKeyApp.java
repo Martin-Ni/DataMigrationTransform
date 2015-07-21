@@ -16,7 +16,8 @@ public class FunctionKeyApp {
 	private final Properties settingCS;
 	private final char FIELD_DELIMITER;
 	private final String lineSeperator;
-	private  List<String> lineList;
+	private List<String> lineList;
+	private final String migrationDate = "20150715";
 	
 	public FunctionKeyApp(Properties settings, char delimiter, String lineSeperator,  Properties settingTOA, Properties settingCS){
 		this.settings = settings;
@@ -47,8 +48,8 @@ public class FunctionKeyApp {
 	public String fn_insertOther(String configSingleValue){
 		String insertOtherString = getIndexOrValue(configSingleValue, null);
 		if (insertOtherString.equalsIgnoreCase("DATE")) {
-			insertOtherString = new SimpleDateFormat("yyyyMMdd").format(new Date());
-			
+			//insertOtherString = new SimpleDateFormat("yyyyMMdd").format(new Date());
+			insertOtherString = migrationDate;
 		} else if (insertOtherString.equalsIgnoreCase("BLANK")) {
 			insertOtherString = "";
 			
@@ -146,10 +147,11 @@ public class FunctionKeyApp {
 	public String fn_limitZero(String configSingleValue) {
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		String limitRef= fn_onlyInsertOriginal(putArray[0]);
+		/*
 		String[] expiryDate = settings.getProperty("EXPIRY.DATE").split(",");
 		int expiryDateValue = Integer.parseInt(lineList.get(Integer.parseInt(expiryDate[0].trim())));
-		int expiryDateIndex = Integer.parseInt(expiryDate[1].trim());
-		
+		int expiryDateIndex = Integer.parseInt(migrationDate.trim());
+		*/
 		String getContrastValue = putArray[2].trim();
 		int indexStart = limitRef.lastIndexOf(putArray[1].trim()) - getContrastValue.length();
 		int indexEnd = indexStart + getContrastValue.length();

@@ -16,6 +16,7 @@ public class FunctionKeyApp {
 	private final ArrayList<Integer> conditionIntList;
 	private final ArrayList<String> conditionStringList;
 	private final Set<String> setContent;
+	private final String migrationDate = "20150715";
 	
 	String mnemonic = "";
 	String msgEQU = "";
@@ -357,7 +358,7 @@ public class FunctionKeyApp {
 	
 	private String setTime (String condition, int start, int end, HashMap<Integer,String> oneRecordMap){
 		if (condition.equals("MD")) {
-			condition = "20150627";
+			condition = migrationDate;
 		} else if (condition.length() == 8) {
 			
 		} else {
