@@ -219,6 +219,9 @@ public class DataTransformer {
 				} else if (configSingleValue.equalsIgnoreCase("REPLACE")){
 					String toaString = functionKeyApp.fn_ReplaceInterface();
 					holdString = toaString;
+				} else if (configSingleValue.equalsIgnoreCase("AADEPOSIT")){
+					String toaString = functionKeyApp.fn_aaDeposit(configSingleValue);
+					holdString = toaString;
 				} else {
 					holdString += "[Warning21]Cannot work";
 					
@@ -240,6 +243,8 @@ public class DataTransformer {
 			output.append(functionKeyApp.fn_getIBFormat());
 		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("REPLACE")) {
 			output.append(functionKeyApp.fn_getReplaceInterface());
+		} else if (fileOfNewFileList.get(0).equalsIgnoreCase("AADEPOSIT")) {
+			output.append(functionKeyApp.fn_getaaDeposit());
 		}
 		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {

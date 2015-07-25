@@ -36,12 +36,16 @@ public class FunctionKeyApp {
 	
 	
 	public String fn_onlyInsertOriginal(String configSingleValue){
-		String onlyInsertField = this.lineList.get(Integer.parseInt(configSingleValue));
+		String onlyInsertField = this.lineList.get(Integer.parseInt(configSingleValue)).trim();
 		return onlyInsertField;
 	}
 	
 	public String fn_acCompanyCode(String configSingleValue, String uploadCompanyCode){
-		String acCompanyCodeString = uploadCompanyCode+getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
+		//String acCompanyCodeString = uploadCompanyCode+getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
+		//Internal Account
+		String company = getIndexOrValue(configSingleValue, this.lineList);
+		String acCompanyCodeString = uploadCompanyCode+company.substring(company.length()-3,company.length());
+		
 		return acCompanyCodeString;
 	}
 	
@@ -81,12 +85,17 @@ public class FunctionKeyApp {
 		
 		if(putArray[2].trim().equalsIgnoreCase("TOA")){
 			lessMsg = this.lineList.get(Integer.parseInt(putArray[1]));
-			String branchCodeString = lessMsg.substring(0,3);
+			//String branchCodeString = lessMsg.substring(0,3);
+			String branchCodeString = lessMsg.substring(lessMsg.length()-3,lessMsg.length());
 			String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
 			moreAndEqualMsg = getTOAString(toaCondition);
+			
+
+			
 		}else if (putArray[1].trim().equalsIgnoreCase("TOA")){
 			moreAndEqualMsg = this.lineList.get(Integer.parseInt(putArray[2]));
-			String branchCodeString = moreAndEqualMsg.substring(0,3);
+			//String branchCodeString = moreAndEqualMsg.substring(0,3);
+			String branchCodeString = moreAndEqualMsg.substring(moreAndEqualMsg.length()-3,moreAndEqualMsg.length());
 			String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
 			lessMsg = getTOAString(toaCondition);
 		}
@@ -322,7 +331,7 @@ public class FunctionKeyApp {
 	
 	StringBuilder groupIB = new StringBuilder();
 	public String fn_getIBFormat() {
-		return group.toString();
+		return groupIB.toString();
 	}
 	
 	public String fn_IBFormat(String configSingleValue) {
@@ -361,11 +370,53 @@ public class FunctionKeyApp {
 		
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
-				group.append(FIELD_DELIMITER);
+				groupIB.append(FIELD_DELIMITER);
 			}
-			group.append(lineList.get(i));
+			groupIB.append(lineList.get(i));
 		}
-		group.append(lineSeperator);
+		groupIB.append(lineSeperator);
+		return "";
+	}
+	
+	StringBuilder aaDeposit = new StringBuilder();
+	public String fn_getaaDeposit() {
+		return aaDeposit.toString();
+	}
+	
+	public String fn_aaDeposit(String configSingleValue) {
+		String allField = lineList.get(21);
+		String allValue = lineList.get(22);
+		String customerField = allField.split("::")[0];
+		String customerValue = allValue.split("::")[0];
+		String[] customerFieldNameArray = customerField.split("!!");
+		String[] customerFieldValueArray = customerValue.split("!!");
+		String fullName = customerFieldValueArray[customerFieldValueArray.length-1];
+		
+		
+		
+		if (fullName.length() > 65) {
+		String newValueString = handleMultiAndSubField(fullName, "!!", 65);
+		int countValue = newValueString.split("!!").length;
+		String newFieldString = "";
+		for (int count = 0 ; count < countValue ; count ++) {
+			newFieldString += "!!";
+			int counts = count + 1 ;
+			newFieldString += "L.DEP.FL.NM:"+counts+":1" ;
+		}
+		String newCustomerField = customerField.replace("!!L.DEP.FL.NM:1:1", newFieldString);
+		String newCustomerValue = customerValue.replace(fullName, newValueString);
+		lineList.set(21, allField.replace(customerField, newCustomerField));
+		lineList.set(22, allValue.replace(customerValue, newCustomerValue));
+		//String newFieldName = 
+		}
+		for (int i = 0 ; i < lineList.size() ; i++) {
+			if (i != 0) {
+				aaDeposit.append(FIELD_DELIMITER);
+			}
+			aaDeposit.append(lineList.get(i));
+		}
+		aaDeposit.append(lineSeperator);
+		
 		return "";
 	}
 	
@@ -414,7 +465,7 @@ public class FunctionKeyApp {
 		for (int i = 0 ; i < replaceConditionArray.length ; i+=3) {
 			int whichField = Integer.parseInt(replaceConditionArray[i].trim()); 
 			String oldString = replaceConditionArray[i+1].trim();
-			String newString = replaceConditionArray[i+2].trim();
+			String newString = replaceConditionArray[i+2].trim().equals("BLANK") ? " " : replaceConditionArray[i+2].trim();
 			lineList.set(whichField, lineList.get(whichField).replace(oldString, newString));
 		}		
 	}
