@@ -318,7 +318,7 @@ public class DataTransformer {
 		String primaryKey = "";
 		for (int seq = 0 ; seq < indexArray.length ; seq++ ){
 			if (seq != 0){
-				primaryKey += "|";
+				primaryKey += "?";
 			}
 			primaryKey += lineStringList.get(Integer.parseInt(indexArray[seq].trim()));
 		}
