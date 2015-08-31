@@ -16,8 +16,8 @@ public class FunctionKeyApp {
 	private final ArrayList<Integer> conditionIntList;
 	private final ArrayList<String> conditionStringList;
 	private final Set<String> setContent;
-	private final String migrationDate = "20150715";
-	
+	private final String migrationDate = "20150814";
+	int i= 0;
 	String mnemonic = "";
 	String msgEQU = "";
 	String msgVNV = "";
@@ -27,6 +27,8 @@ public class FunctionKeyApp {
 	String msgSFV = "";
 	String msgFVNValue = "";
 	String msgFVNBlank = "";
+	String msgFVNLD = "";
+	String msgFVNLimit = "";
 	String msgTCT = "";
 	int ix = 0;
 	
@@ -135,6 +137,9 @@ public class FunctionKeyApp {
 				msgFVNValue+lineSeperator+lineSeperator+
 				"====If A equals fixed value, B need to have the Blank"+lineSeperator+
 				msgFVNBlank+lineSeperator+lineSeperator+
+				"====For LD Product List"+lineSeperator+
+				msgFVNLD+lineSeperator+lineSeperator+
+				msgFVNLimit+lineSeperator+lineSeperator+
 				"====Check the time "+lineSeperator+
 				msgTCT+lineSeperator+lineSeperator
 				).toString();
@@ -263,10 +268,89 @@ public class FunctionKeyApp {
 				}
 			}
 			break;
+			
+		case "LD":
+			String recordLimitRef = oneRecordMap.get(8).substring(0, 4).trim();
+			String recordCategory = oneRecordMap.get(11).trim();
+			String recordSubProduct = oneRecordMap.get(172).trim();
+			String recordContract = oneRecordMap.get(170).trim();
+			
+			String[] propertyValue = settings.getProperty(recordContract.replace(" ", ""), ", ,").split(",", -1);
+			String shouldLimitRef = propertyValue[0].trim();
+			String shouldCategory = propertyValue[1].trim();
+			String shouldSubProduct = propertyValue[2].trim();
+			
+			if (shouldLimitRef.equals("")) {
+				msgFVNLD += "[the Contract is not exist "+recordContract+" ]" +this.mnemonic +", ";
+			} 
+			else if (!recordLimitRef.equals(shouldLimitRef)) {
+				msgFVNLD += "[ Limit.ref are not match "+recordContract+" ] " +this.mnemonic +", ";
+			} else if ( !recordCategory.equals(shouldCategory)) {
+				msgFVNLD += "[ Category are not match "+recordContract+" ] " +this.mnemonic +", ";
+			} else if ( !recordSubProduct.equals(shouldSubProduct)) {
+				msgFVNLD += "[ SubProduct are not match "+recordContract+" ] " +this.mnemonic +", ";
+			}
+			break;
+			
+		case "LIMIT":
+			String recordContract_L = oneRecordMap.get(70).replace(" ", "");
+			String recordLimitRef_L = oneRecordMap.get(1).split("\\.")[1].trim();
+			String shouldLimitRef_L = settings.getProperty(recordContract_L, ",").split(",", -1)[0].trim();
+			if (shouldLimitRef_L.equals("")) {
+				msgFVNLimit += "[Contract or Limit.ref is not exist "+oneRecordMap.get(70)+" ] " +this.mnemonic +", ";
+			} else if ((shouldLimitRef_L.equals("100") && recordLimitRef_L.equals("0000100")) || 
+					(recordLimitRef_L.equals("000"+shouldLimitRef_L))) {
+			} else {
+				msgFVNLimit += "[ Contract and Limit.ref are not match "+oneRecordMap.get(70)+" ] " +this.mnemonic +", ";
+			}
+			break;
+			
+		case "CUSTOMER":
+			String recordCustomerId = oneRecordMap.get(1).trim();
+			String recordSector = oneRecordMap.get(17).trim();
+			String shouldSector = settings.getProperty("T"+recordCustomerId, "").trim();
+			if (shouldSector.equals("") || shouldSector.equals(recordSector)) {
+				
+			} else {
+				msgFVNLimit += "[ CsutomerID '"+recordCustomerId+"' and Sector '"+recordSector+"' are not match should be '"+shouldSector+"' ] " +this.mnemonic +", ";
+			}
+			break;
+			
+		case "PD":
+			//System.out.println(i++);
+			if (oneRecordMap.get(2).equals("NEW")) {
+				String recordContract_P = oneRecordMap.get(26);
+				
+				String recordLimit_P = oneRecordMap.get(6).trim();
+				String recordCategory_P = oneRecordMap.get(5).trim();
+				String recordSubproduct_P = oneRecordMap.get(28).trim();
+				
+				String shouldCategory_P = settings.getProperty(recordContract_P.replace(" ", ""), ", , ").split(",",-1)[1].trim();
+				String shouldSubproduct_p = settings.getProperty(recordContract_P.replace(" ", ""), ", , ").split(",",-1)[2].trim();
+				
+				System.out.println(i++);
+				if (recordLimit_P.substring(0, 3).equals("100") && !recordCategory_P.equals(shouldCategory_P)) {
+					msgFVNLimit += "[The Category is not match "+recordContract_P+" ] "+this.mnemonic+", ";
+					
+				} else if (!recordLimit_P.substring(0, 3).equals("100") && !recordCategory_P.equals(shouldCategory_P)) {
+					msgFVNLimit += "[The Category is not match "+recordContract_P+" ] "+this.mnemonic+", ";
+					
+				} else if (!recordLimit_P.substring(0, 3).equals("100") && !recordSubproduct_P.equals(shouldSubproduct_p)) {
+					msgFVNLimit += "[The Subproduct is not match "+recordContract_P+" ] "+this.mnemonic+", ";
+					
+				} else if (shouldCategory_P.equals("")) {
+					msgFVNLimit += "[Cannot find the Mapping "+recordContract_P+" ] "+this.mnemonic+", ";
+					
+				}
+			}
+			
+			
+			break;
+		
 		}
 	}
 	
-	int aa= 0;
+	
 	private void timeCheckTime (String condition, HashMap<Integer,String> oneRecordMap) {
 		addToListString(conditionStringList, condition); //TCT: 0, 0, 8, <=, 1, 0, 8 ~loop
 		String msgStart = "";
@@ -307,7 +391,7 @@ public class FunctionKeyApp {
 								conditionStringList.get(i) +" "+
 								conditionStringList.get(i+3)+" "+
 								conditionStringList.get(i+4) +" : "+
-								Date_A +" should be >= "+Date_B + " | ";
+								Date_A +" should be < "+Date_B + " | ";
 					}
 					break;
 			

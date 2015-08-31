@@ -17,7 +17,7 @@ public class FunctionKeyApp {
 	private final char FIELD_DELIMITER;
 	private final String lineSeperator;
 	private List<String> lineList;
-	private final String migrationDate = "20150715";
+	private final String migrationDate = "20150814";
 	
 	public FunctionKeyApp(Properties settings, char delimiter, String lineSeperator,  Properties settingTOA, Properties settingCS){
 		this.settings = settings;
@@ -41,11 +41,15 @@ public class FunctionKeyApp {
 	}
 	
 	public String fn_acCompanyCode(String configSingleValue, String uploadCompanyCode){
-		//String acCompanyCodeString = uploadCompanyCode+getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
+		
+		String acCompanyCodeString ="";
+		if (!settings.getProperty("fn", "").trim().equals("GL")) {
+		acCompanyCodeString = uploadCompanyCode+getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
+		} else {
 		//Internal Account
 		String company = getIndexOrValue(configSingleValue, this.lineList);
-		String acCompanyCodeString = uploadCompanyCode+company.substring(company.length()-3,company.length());
-		
+		acCompanyCodeString = uploadCompanyCode+company.substring(company.length()-3,company.length());
+		}
 		return acCompanyCodeString;
 	}
 	
@@ -83,19 +87,28 @@ public class FunctionKeyApp {
 		String toaConditionString = uploadCompanyCode;
 		String currencyCodeString = this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
 		
-		if(putArray[2].trim().equalsIgnoreCase("TOA")){
+		if (putArray[2].trim().equalsIgnoreCase("TOA")) {
 			lessMsg = this.lineList.get(Integer.parseInt(putArray[1]));
-			//String branchCodeString = lessMsg.substring(0,3);
-			String branchCodeString = lessMsg.substring(lessMsg.length()-3,lessMsg.length());
+			String branchCodeString = "";
+			
+			if (!settings.getProperty("fn", "").trim().equals("GL")) {
+				branchCodeString = lessMsg.substring(0,3);
+			} else {
+				branchCodeString = lessMsg.length() > 8 ? lessMsg.substring(lessMsg.length()-3,lessMsg.length()) : this.lineList.get(5);
+			}
+			
 			String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
 			moreAndEqualMsg = getTOAString(toaCondition);
 			
-
-			
-		}else if (putArray[1].trim().equalsIgnoreCase("TOA")){
+		} else if (putArray[1].trim().equalsIgnoreCase("TOA")) {
 			moreAndEqualMsg = this.lineList.get(Integer.parseInt(putArray[2]));
-			//String branchCodeString = moreAndEqualMsg.substring(0,3);
-			String branchCodeString = moreAndEqualMsg.substring(moreAndEqualMsg.length()-3,moreAndEqualMsg.length());
+			String branchCodeString = "";
+			if (!settings.getProperty("fn", "").trim().equals("GL")) {
+				branchCodeString = moreAndEqualMsg.substring(0,3);
+			} else {
+				branchCodeString = moreAndEqualMsg.length() > 8 ? moreAndEqualMsg.substring(moreAndEqualMsg.length()-3,moreAndEqualMsg.length()) : this.lineList.get(5);
+			}
+			
 			String toaCondition = toaConditionString+branchCodeString+currencyCodeString;
 			lessMsg = getTOAString(toaCondition);
 		}
@@ -120,7 +133,14 @@ public class FunctionKeyApp {
 		//BigDecimal freezeAmount = getBigDecimal(this.lineList.get(Integer.parseInt(putArray[1].trim())));
 		BigDecimal freezeAmount = new BigDecimal(this.lineList.get(Integer.parseInt(putArray[1].trim())));
 		
-		String combineString = getBigDecimal(availableBalance.add(freezeAmount).toString()).toString();
+		String currencyCodeString = this.lineList.get(Integer.parseInt(settings.getProperty("CY", "")));//For internal Account of JPY
+		
+		String combineString = !currencyCodeString.equals("JPY") 
+				? 
+				getBigDecimal(availableBalance.add(freezeAmount).toString()).toString() 
+				: 
+				getBigDecimalNoPoint(availableBalance.add(freezeAmount).toString()).toString();
+		
 		return combineString;
 	}
 	
@@ -195,11 +215,20 @@ public class FunctionKeyApp {
 				List<String> oldlineList = fn_newTheLineList(oldValue);
 				// new lineList
 				for (int i = 0 ; i < oldlineList.size() ; i++){
-					if (i == 5 || i == 6 || i == 8 || i == 10 || i == 11){
+					if (i == 5 || i == 6 || i == 10 ){
 						int oldDate = Integer.parseInt(oldlineList.get(i));
 						int newDate = Integer.parseInt(lineList.get(i));
 						if(oldDate < newDate){
-							lineList.set(i, Integer.toString(newDate)) ;
+							lineList.set(i, Integer.toString(oldDate)) ;
+						}
+						continue;
+					}
+					
+					if (i == 8 || i == 11){
+						int oldDate = Integer.parseInt(oldlineList.get(i));
+						int newDate = Integer.parseInt(lineList.get(i));
+						if(oldDate > newDate){
+							lineList.set(i, Integer.toString(oldDate)) ;
 						}
 						continue;
 					}

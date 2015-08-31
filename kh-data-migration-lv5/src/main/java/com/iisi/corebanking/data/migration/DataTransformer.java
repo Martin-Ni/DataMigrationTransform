@@ -265,9 +265,12 @@ public class DataTransformer {
 		}
 		output.append(lineSeperator + lineSeperator + funKey.split("\\.")[0]+ " Total Record |" +lineACount);
 		output.append(lineSeperator + funKey.split("\\.")[1]+ " Total Record |" +this.lineBCount);
-		output.append(lineSeperator + lineSeperator + "Below is No use in File " + funKey.split("\\.")[1] + lineSeperator + allLinesBMap);
+		output.append(lineSeperator + lineSeperator + "Below is No use in File " + funKey.split("\\.")[1] + lineSeperator);
 		
-		
+		for (String remainList : allLinesBMap.keySet()) {
+			output.append(remainList);
+			output.append(lineSeperator);
+		}
 		
 		// Write to output file
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
