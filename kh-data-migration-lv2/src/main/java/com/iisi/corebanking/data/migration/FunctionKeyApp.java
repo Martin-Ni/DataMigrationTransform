@@ -17,7 +17,7 @@ public class FunctionKeyApp {
 	private final char FIELD_DELIMITER;
 	private final String lineSeperator;
 	private List<String> lineList;
-	private final String migrationDate = "20150814";
+	private final String migrationDate = "20150911";
 	
 	public FunctionKeyApp(Properties settings, char delimiter, String lineSeperator,  Properties settingTOA, Properties settingCS){
 		this.settings = settings;
@@ -518,7 +518,7 @@ public class FunctionKeyApp {
 	}
 
 	private BigDecimal getBigDecimal(String moneyInput){
-		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(2, BigDecimal.ROUND_HALF_UP);
+		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(2, BigDecimal.ROUND_HALF_UP);//
 		return moneyOutput;
 	}
 	

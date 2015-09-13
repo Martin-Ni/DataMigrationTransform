@@ -16,7 +16,7 @@ public class FunctionKeyApp {
 	private final ArrayList<Integer> conditionIntList;
 	private final ArrayList<String> conditionStringList;
 	private final Set<String> setContent;
-	private final String migrationDate = "20150814";
+	private final String migrationDate = "20150911";
 	int i= 0;
 	String mnemonic = "";
 	String msgEQU = "";
@@ -80,7 +80,7 @@ public class FunctionKeyApp {
 	
 	public void functionKeyAppService(HashMap<Integer,String> oneRecordMap, String mnemonic, int whichLine){
 
-		this.mnemonic= (String) (mnemonic == "NoKey"? Integer.toString(whichLine) : mnemonic+" - "+Integer.toString(whichLine)); 
+		this.mnemonic= (String) (mnemonic == "NoKey" ? Integer.toString(whichLine) : mnemonic+" - "+Integer.toString(whichLine)); 
 		
 		if (oneRecordMap != null && oneRecordMap.size()>1) {
 			for(String runFnKey :setFunKey){
@@ -183,7 +183,7 @@ public class FunctionKeyApp {
 			if((contrast_A.split("::").length != contrast_B.split("::").length) ||
 					(contrast_A == "" &&  contrast_B != "") ||
 					(contrast_A != "" &&  contrast_B == "")){
-				msgVNV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+				msgVNV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", "+lineSeperator;
 			}
 		}
 	}
@@ -201,14 +201,14 @@ public class FunctionKeyApp {
 			if((contrastArry_A.length != contrastArry_B.length) ||
 					(contrast_A == "" &&  contrast_B != "")||
 					(contrast_A != "" &&  contrast_B == "")){
-				msgV2V += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+				msgV2V += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", "+lineSeperator;
 			} else {
 				int countAmount = contrastArry_A.length;
 				for (int ii = 0 ; ii <countAmount ; ii++) {
 					int a = contrastArry_A[ii].split("!!").length;
 					int b = contrastArry_B[ii].split("!!").length;
 					if (a != b) {
-						msgV2V += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+						msgV2V += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", "+lineSeperator;
 						break;
 					}
 				}
@@ -224,7 +224,7 @@ public class FunctionKeyApp {
 			contrast_A = oneRecordMap.get(conditionIntList.get(i));
 			contrast_B = oneRecordMap.get(conditionIntList.get(i+1));
 			if ((contrast_A.split("::").length < contrast_B.split("::").length)) {
-				msgVSV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", ";
+				msgVSV += "["+contrast_A +" - " +contrast_B+"]-"+this.mnemonic+", "+lineSeperator;
 			}
 			
 		}
@@ -307,12 +307,43 @@ public class FunctionKeyApp {
 			
 		case "CUSTOMER":
 			String recordCustomerId = oneRecordMap.get(1).trim();
+			
 			String recordSector = oneRecordMap.get(17).trim();
-			String shouldSector = settings.getProperty("T"+recordCustomerId, "").trim();
-			if (shouldSector.equals("") || shouldSector.equals(recordSector)) {
-				
+			String recordIndustry = oneRecordMap.get(20).trim();
+			
+			String shouldSector = settings.getProperty("C"+recordCustomerId, "").split(",")[0].trim();
+			String shouldIndustry = settings.getProperty("C"+recordCustomerId, "");
+			shouldIndustry = shouldIndustry.equals("") ? shouldIndustry : shouldIndustry.split(",")[1].trim();
+			
+			if (!shouldSector.equals("")) {
+				if (!shouldSector.equals(recordSector) ) {
+					msgFVNLimit += "[ CsutomerID '"+recordCustomerId+"' and Sector '"
+				+recordSector+"' are not match should be '"
+				+shouldSector+"' ] " +this.mnemonic +", ";
+				} else if (!shouldIndustry.equals(recordIndustry)) {
+					msgFVNLimit += "[ CsutomerID '"+recordCustomerId+"' and Industry '"
+				+recordIndustry+"' are not match should be '"
+				+shouldIndustry+"' ] " +this.mnemonic +", ";
+				}
 			} else {
-				msgFVNLimit += "[ CsutomerID '"+recordCustomerId+"' and Sector '"+recordSector+"' are not match should be '"+shouldSector+"' ] " +this.mnemonic +", ";
+				shouldIndustry = settings.getProperty("S"+recordSector).trim();
+				if (!shouldIndustry.equals(recordIndustry)) {
+					msgFVNLimit += "[ CsutomerID '"+recordCustomerId+"' and Sector '"
+				+recordSector+"' are not match the Industry '"
+				+recordIndustry+"', should be '"
+				+shouldIndustry+"' ] " +this.mnemonic +", ";
+				}
+			}
+			
+			String recordResidence = oneRecordMap.get(24).trim();
+			String shouldResidence = settings.getProperty("CR"+recordCustomerId, "").trim();
+			
+			if (!shouldResidence.equals("")) {
+				if (!shouldResidence.equals(recordResidence)) {
+					msgFVNLimit += "[ CsutomerID '"+recordCustomerId+"' and Residence '"
+				+recordResidence+"' are not match should be '"
+				+shouldResidence+"' ] " +this.mnemonic +", ";
+				}
 			}
 			break;
 			
@@ -343,10 +374,20 @@ public class FunctionKeyApp {
 					
 				}
 			}
-			
-			
 			break;
-		
+			case "ACCOUNT":
+					String recordAccount_A = oneRecordMap.get(1);
+					
+					String recordCategory_A = oneRecordMap.get(3).trim();
+					
+					String shouldCategory_A = settings.getProperty("C"+recordAccount_A.trim(), "");
+					
+					if (!shouldCategory_A.equals("") &&  !shouldCategory_A.equals(recordCategory_A)){
+						msgFVNLimit += "[ CsutomerID '"+recordAccount_A+"' and Cateogry '"
+								+recordCategory_A+"' are not match should be '"
+								+shouldCategory_A+"' ] " +this.mnemonic +", ";
+					}
+				break;
 		}
 	}
 	

@@ -24,6 +24,21 @@ public class DataTransformer {
 	private static final String MAP_REGEX_INITIAL_FIELD_VALUE_KEY = "regex.map.initial.equal";
 	private static final String EXPECTED_FIELD_COUNT_KEY = "fields.expected.count";
 	
+	private static final String NO_CONDITION_VALUE_FIELDS_KEY = "fields.no.condition";
+	private static final String MULTI_VALUE_FIELDS_KEY = "fields.multi";
+	private static final String SUB_VALUE_FIELDS_KEY = "fields.sub";
+	
+	private static final String MULTI_VALUE_FIELDS_REPLACE_KEY = "fields.replace.multi";
+	private static final String SUB_VALUE_FIELDS_REPLACE_KEY = "fields.replace.sub";
+	
+	private static final String[] multiGroup = { 
+												NO_CONDITION_VALUE_FIELDS_KEY, 
+												MULTI_VALUE_FIELDS_KEY, 
+												SUB_VALUE_FIELDS_KEY, 
+												MULTI_VALUE_FIELDS_REPLACE_KEY, 
+												SUB_VALUE_FIELDS_REPLACE_KEY 
+											};
+	
 	// Default values
 	private final Charset charset;
 	private final String lineSeperator;
@@ -37,6 +52,7 @@ public class DataTransformer {
 	private final Set<String> setField;
 	private final Set<String> setFixValue;
 	private final Set<String> setAmountField;
+	private final Set<String> setFieldAllowMultiValue;
 	private HashMap<String, String> mappingLength;
 	private HashMap<String, String> mappingField;
 	private HashMap<String, String> mappingFieldChar;
@@ -101,6 +117,7 @@ public class DataTransformer {
 		this.setField = new HashSet<String>();
 		this.setFixValue = new HashSet<String>();
 		this.setAmountField = new HashSet<String>();
+		this.setFieldAllowMultiValue = new HashSet<String>();
 		this.mappingLength = new HashMap<String, String>();
 		this.mappingField = new HashMap<String, String>();
 		this.mappingFieldChar =new HashMap<String, String>();
@@ -139,6 +156,10 @@ public class DataTransformer {
 			}
 		}
 		
+		for (String group : multiGroup) {
+			addStringToSetNotClean(setFieldAllowMultiValue, settings.getProperty(group,""));
+		}
+		
 	}
 
 	/**
@@ -164,6 +185,17 @@ public class DataTransformer {
 	private void addStringToSet(Set<String> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",,");
 		set.clear();
+		for (String idx : indices) {
+			try {
+				set.add(idx.trim());
+			} catch (NumberFormatException e) {
+				// do nothing, the Set remains empty
+			}
+		}
+	}
+	
+	private void addStringToSetNotClean(Set<String> set, String commaDelimitedIndices) {
+		String[] indices = commaDelimitedIndices.split(",");
 		for (String idx : indices) {
 			try {
 				set.add(idx.trim());
@@ -268,7 +300,7 @@ public class DataTransformer {
 			mappingDataFieldLength.put(Integer.toString(whichField), Integer.toString(whichChar));
 			identifyAndInitialLength(whichField, whichLine);
 			identifyFixValue(fieldValue, whichField);
-			if (whichLine%1000  == 0)
+			//if (whichLine%1000  == 0)
 			System.out.println(whichLine);
 			
 			if (fieldCount != whichField+1){
@@ -359,7 +391,7 @@ public class DataTransformer {
 		return hs.toUpperCase();
 	}
 	
-	private String sortMap(int amount, HashMap<String, String> mapping){
+	private String sortMap(int amount, HashMap<String, String> mapping) {
 		String dataString="";
 		for(int i = 0 ; i <= amount ; i++){
 			String iString =Integer.toString(i);
@@ -370,7 +402,7 @@ public class DataTransformer {
 	}
 	
 	
-	private void identifyAndInitialLength(int fieldAmount, int whichLine){
+	private void identifyAndInitialLength(int fieldAmount, int whichLine) {
 		int fieldDataLength = 0;
 		int length;
 		String cutLengthString;
@@ -384,15 +416,18 @@ public class DataTransformer {
 			if (!isEmptyString(cutLengthString)) {
 				length = Integer.parseInt(cutLengthString);
 			}
-			if (fieldDataLength > length) {
-				mappingLength.put(Integer.toString(whichField), /*mappingLength.get(Integer.toString(whichField))+ */" Over the Length "+length+" "+whichLine +" ["+ mnemonic+"], ");
+			if (fieldDataLength > length && !setFieldAllowMultiValue.contains(Integer.toString(whichField))) {
+				mappingLength.put(Integer.toString(whichField), /*mappingLength.get(Integer.toString(whichField))+ */
+						" Over the Length "+length+" "+whichLine +" ["+ mnemonic+"], ");
 			}
+			
 			
 			cutLengthString = settings.getProperty(Integer.toString(whichField)+"S", "").trim();
 			if (!isEmptyString(cutLengthString)){
 				length = Integer.parseInt(cutLengthString);
 				if (fieldDataLength < length){
-				mappingDataFieldLeast.put(Integer.toString(whichField),/*mappingLength.get(Integer.toString(whichField))+ */" Least the Length "+length+" "+whichLine+" ["+ mnemonic+"], ");
+				mappingDataFieldLeast.put(Integer.toString(whichField),/*mappingLength.get(Integer.toString(whichField))+ */
+						" Least the Length "+length+" "+whichLine+" ["+ mnemonic+"], ");
 				}
 			}
 		}
@@ -400,7 +435,7 @@ public class DataTransformer {
 	}
 	
 	//@SuppressWarnings("null")
-	private void identifyFixValue(String fieldValue, int whichField){
+	private void identifyFixValue(String fieldValue, int whichField) {
 		String fixValue =settings.getProperty(whichField+"F", "").trim();
 		String needValue =settings.getProperty(whichField+"N", "").trim();
 		if (!isEmptyString(fieldValue) && (!isEmptyString(fixValue) || !isEmptyString(needValue))) {
@@ -421,10 +456,12 @@ public class DataTransformer {
 					if (!setFixValue.contains(fieldValueString)) {
 						if (mappingDataFieldNotMatchFixValue.containsKey(whichFieldString)){
 							mappingDataFieldNotMatchFixValue.put(whichFieldString, 
-									checkExit(mappingDataFieldNotMatchFixValue.get(whichFieldString), "<Not allow this String: "+fieldValue+" - "+mnemonic+">")
+									checkExit(mappingDataFieldNotMatchFixValue.get(whichFieldString), 
+											"<Not allow this String: "+fieldValue+" - "+mnemonic+">")
 									);
 						} else {
-							mappingDataFieldNotMatchFixValue.put(whichFieldString, " <Not allow this String: "+fieldValue+" - "+mnemonic+">");
+							mappingDataFieldNotMatchFixValue.put(whichFieldString, 
+									" <Not allow this String: "+fieldValue+" - "+mnemonic+">");
 						}
 						break;
 					}
@@ -455,7 +492,8 @@ public class DataTransformer {
 		String whichFieldString = Integer.toString(whichField);
 		
 		if (this.setField.contains(whichFieldString)) {
-			this.mappingFieldChar.put(whichFieldString, /*this.mappingFieldChar.get(whichFieldString)+ " <"+key+">");*/checkExit(this.mappingFieldChar.get(whichFieldString), " <"+key+"> "));
+			this.mappingFieldChar.put(whichFieldString, /*this.mappingFieldChar.get(whichFieldString)+ " <"+key+">");*/
+					checkExit(this.mappingFieldChar.get(whichFieldString), " <"+key+"> "));
 		} else {
 			this.setField.add(whichFieldString);
 			this.mappingFieldChar.put(whichFieldString, " <"+key+">");
@@ -471,7 +509,8 @@ public class DataTransformer {
 		}
 		
 		if (this.setLine.contains(whichLineString)) {
-			this.mappingDataLineAndField.put(whichLineString, this.mappingDataLineAndField.get(whichLineString)+"| "+"<"+key+" in "+whichFieldString+">");
+			this.mappingDataLineAndField.put(whichLineString, 
+					this.mappingDataLineAndField.get(whichLineString)+"| "+"<"+key+" in "+whichFieldString+">");
 		} else {
 			this.setLine.add(whichLineString);
 			this.mappingDataLineAndField.put(whichLineString, " <"+key+" in "+whichFieldString+">");
