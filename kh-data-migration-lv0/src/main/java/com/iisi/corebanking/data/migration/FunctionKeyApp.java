@@ -17,7 +17,8 @@ public class FunctionKeyApp {
 	private final ArrayList<String> conditionStringList;
 	private final Set<String> setContent;
 	private final String migrationDate = "20150911";
-	int i= 0;
+	int i = 0;
+	int ix = 0;
 	String mnemonic = "";
 	String msgEQU = "";
 	String msgVNV = "";
@@ -30,8 +31,19 @@ public class FunctionKeyApp {
 	String msgFVNLD = "";
 	String msgFVNLimit = "";
 	String msgTCT = "";
-	int ix = 0;
 	
+	/**
+	 * Create an entity for check the data format.  
+	 * 
+	 * @param outputFileLineSeperator
+	 *            - Output the newLine character.
+	 * @param settings
+	 *            - The critical setting of property.
+	 * @param settingsMsg
+	 *            - The Error Message description of property.
+	 * @param DELIMITER
+	 *            - The delimiter character.
+	 */
 	public FunctionKeyApp(String outputFileLineSeperator, Properties settings, Properties settingsMsg, char DELIMITER){
 		this.settings = settings;
 		//this.settingsMsg = settingsMsg;
@@ -45,6 +57,16 @@ public class FunctionKeyApp {
 		
 	}
 	
+	/**
+	 * Use the comma to slit the multi reference of Field number and convert to Integer String and join to Set.
+	 * If the string cannot convert, will ignore this reference one. 
+	 * Before join the reference to Set, this one will not clear the data of Set.
+	 * 
+	 * @param set
+	 *            - Join the data in Set.
+	 * @param commaDelimitedIndices
+	 *            - Use the comma split the reference field
+	 */
 	private void addStringToSet(Set<String> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
 		for (String idx : indices) {
@@ -56,6 +78,16 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	/**
+	 * Use the comma to slit the multi reference of Field number and convert to Integer Int and join to List.
+	 * If the string cannot convert, will ignore this reference one. 
+	 * Before join the reference to List, this one will not clear the data of Set.
+	 * 
+	 * @param set
+	 *            - Join the data in List.
+	 * @param commaDelimitedIndices
+	 *            - Use the comma split the reference field
+	 */
 	private void addToList(ArrayList<Integer> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
 		for (String idx : indices) {
@@ -67,6 +99,16 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	/**
+	 * Use the comma to slit the multi reference of Field number and convert to Integer String and join to List.
+	 * If the string cannot convert, will ignore this reference one. 
+	 * Before join the reference to List, this one will not clear the data of Set.
+	 * 
+	 * @param set
+	 *            - Join the data in List.
+	 * @param commaDelimitedIndices
+	 *            - Use the comma split the reference field
+	 */
 	private void addToListString(ArrayList<String> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
 		for (String idx : indices) {
@@ -78,6 +120,18 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	
+	/**
+	 * Specify the function need to check 
+	 * which critical base on the property setting. 
+	 * 
+	 * @param oneRecordMap
+	 *            - One line Record the map of value.
+	 * @param mnemonic
+	 *            - For Reference the Record Key.
+	 * @param whichLine
+	 *            - For Reference the Record whichLine.
+	 */
 	public void functionKeyAppService(HashMap<Integer,String> oneRecordMap, String mnemonic, int whichLine){
 
 		this.mnemonic= (String) (mnemonic == "NoKey" ? Integer.toString(whichLine) : mnemonic+" - "+Integer.toString(whichLine)); 
@@ -117,6 +171,13 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	/**
+	 * After all records finish checked, output the Report Description.
+	 * 
+	 * @return output
+	 *            - The all function is written the Error 
+	 *            that which one is not follow the critical.
+	 */
 	public String getMsg(){
 		StringBuilder output = new StringBuilder();
 		
@@ -146,6 +207,15 @@ public class FunctionKeyApp {
 		
 	}
 	
+	/**
+	 * Case: SFV - Substring Equal Fixed Value.
+	 * Check the substring of values equal the fixed value or not. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void substringFixValue(String condition, HashMap<Integer,String> oneRecordMap) {
 		addToList(conditionIntList, condition);
 		addStringToSet(setContent, condition);
@@ -157,6 +227,15 @@ public class FunctionKeyApp {
 		}
 	}
 
+	/**
+	 * Case: VNN - value and need Null
+	 * Check the values, if one field have value, other one field need to be null. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void valueNdNull(String condition, HashMap<Integer,String> oneRecordMap) {
 		addToList(conditionIntList, condition);
 		String contrast_A ;
@@ -172,7 +251,15 @@ public class FunctionKeyApp {
 	}
 	
 	
-
+	/**
+	 * Case: VNV - value and need to have value
+	 * Check the values, if one field have value, other one field also need to have the value. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void valueNdvalue(String condition, HashMap<Integer,String> oneRecordMap) {
 		addToList(conditionIntList, condition);
 		String contrast_A ;
@@ -188,6 +275,15 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	/**
+	 * Case: V2V - value and need to have value with Multi and Subvalue
+	 * Check the values, if one field have value, other one field also need to have the value. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void valueNdvalueLv2(String condition, HashMap<Integer,String> oneRecordMap) {
 		addToList(conditionIntList, condition);
 		String contrast_A ;
@@ -216,6 +312,15 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	/**
+	 * Case: VSV - Values equal or Less Value
+	 * The length of value should be greater or equal than other Value 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void valuesEqOrLsvalue(String condition, HashMap<Integer,String> oneRecordMap) {
 		addToList(conditionIntList, condition);
 		String contrast_A ;
@@ -230,7 +335,15 @@ public class FunctionKeyApp {
 		}
 	}
 	
-
+	/**
+	 * Case: EQS - Equal Substring
+	 * Check the values of two fields that the substrings is whether the same or not. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void subStringEqSubString(String condition, HashMap<Integer,String> oneRecordMap){
 		addToList(conditionIntList, condition);
 		String contrast_A ;
@@ -244,6 +357,24 @@ public class FunctionKeyApp {
 		}
 	}
 	
+	/**
+	 * Case: FVN - Function value need 
+	 * Normal function: Value and Blank
+	 *   VALUE: WHEN the field A is fixed valuve, other field should be has value.
+	 *   BLANK: WHEN the field A is fixed valuve, other field should be the blank.
+	 * Customizer: 
+	 *   LD, 
+	 *   LIMIT, 
+	 *   CUSTOMER, 
+	 *   PD, 
+	 *   ACCOUNT.
+	 *   
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record value mapping.
+	 */
 	private void fixAndValueOrBlank(String condition, HashMap<Integer,String> oneRecordMap){
 		addToListString(conditionStringList, condition);//FVN= ValueOrBlank, 1, Y, 3
 		switch (conditionStringList.get(0)) {
@@ -391,7 +522,14 @@ public class FunctionKeyApp {
 		}
 	}
 	
-	
+	/**
+	 * Check the date base on the critical. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param oneRecordMap
+	 *            - The one record split mapping.
+	 */
 	private void timeCheckTime (String condition, HashMap<Integer,String> oneRecordMap) {
 		addToListString(conditionStringList, condition); //TCT: 0, 0, 8, <=, 1, 0, 8 ~loop
 		String msgStart = "";
@@ -480,7 +618,20 @@ public class FunctionKeyApp {
 		msgTCT += msgStart != "" ? msgStart +" - "+ this.mnemonic + ", " : "";
 	}
 	
-	
+	/**
+	 * Format the DATE format and value come from. 
+	 * 
+	 * @param condition
+	 *            - The critical of property setting.
+	 * @param start
+	 *            - Substring slit start from.
+	 * @param end
+	 *            - Substring slit finish end.
+	 * @param oneRecordMap
+	 *            - The one record split mapping.
+	 * @return condition
+	 *            - The date for check.
+	 */
 	private String setTime (String condition, int start, int end, HashMap<Integer,String> oneRecordMap){
 		if (condition.equals("MD")) {
 			condition = migrationDate;

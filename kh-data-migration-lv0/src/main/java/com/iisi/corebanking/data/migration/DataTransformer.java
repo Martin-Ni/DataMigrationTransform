@@ -64,12 +64,12 @@ public class DataTransformer {
 	private String mnemonic ="NoKey";
 	private FunctionKeyApp fnKey;
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
 	 * 
 	 * @param charsetName
-	 *            - 輸入檔案的編碼名稱
+	 *            - Input the Name of Encoding with file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
 	 * @throws IllegalCharsetNameException
 	 *             If the given charset name is illegal
 	 * @throws IllegalArgumentException
@@ -83,26 +83,25 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
-	 * 
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
+	 *  
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
 	 */
 	public DataTransformer(Charset charset, Properties settings, Properties settingsMsg) {
 		this(charset, System.getProperty("line.separator"), settings, settingsMsg);
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體
-	 * 
+	 * Create an entity of Data Transformer base on the Setting Information.
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param outputFileLineSeperator
-	 *            - 輸出檔案所要使用的換行字元
+	 *            - Output the character of newline that is used
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
 	 */
 	public DataTransformer(Charset charset, String outputFileLineSeperator, Properties settings, Properties settingsMsg) {
 		super();
@@ -134,7 +133,7 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 初始化實體變數
+	 * Initialize the variable
 	 */
 	private void init() {
 		String mapFieldIdx = settings.getProperty(MAP_REGEX_FIELD_VALUE_KEY);
@@ -146,7 +145,7 @@ public class DataTransformer {
 			addIntToSet(mapInitialFieldSet, mapInitialFieldIdx);
 		}
 		
-		// 讀取所設定的欄位數量
+		// Loading the quantity of fields by setting
 		String fieldCountStr = settings.getProperty(EXPECTED_FIELD_COUNT_KEY);
 		if (fieldCountStr != null && fieldCountStr.trim().length() != 0) {
 			try {
@@ -163,12 +162,14 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 將以逗號分隔的多個欄位索引分割並trim後轉為Integer加入Set。 若所分割出來的字串無法被轉換為Integer，則會略過該筆資料。
+	 * Use the comma to slit the multi reference of Field number and convert to Integer Int and join to Set.
+	 * If the string cannot convert to Integer, will ignore this reference one. 
+	 * Before join the reference to Set, always clear the data of Set.
 	 * 
 	 * @param set
-	 *            - 要加入資料的Set
+	 *            - Join the data in Set.
 	 * @param commaDelimitedIndices
-	 *            - 逗號分割的欄位索引
+	 *            - Use the comma split the reference field
 	 */
 	private void addIntToSet(Set<Integer> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
@@ -182,6 +183,16 @@ public class DataTransformer {
 		}
 	}
 	
+	/**
+	 * Use the comma to slit the multi reference of Field number and convert to Integer String and join to Set.
+	 * If the string cannot convert, will ignore this reference one. 
+	 * Before join the reference to Set, always clear the data of Set.
+	 * 
+	 * @param set
+	 *            - Join the data in Set.
+	 * @param commaDelimitedIndices
+	 *            - Use the comma split the reference field
+	 */
 	private void addStringToSet(Set<String> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",,");
 		set.clear();
@@ -194,6 +205,16 @@ public class DataTransformer {
 		}
 	}
 	
+	/**
+	 * Use the comma to slit the multi reference of Field number and convert to Integer String and join to Set.
+	 * If the string cannot convert, will ignore this reference one. 
+	 * Before join the reference to Set, this one will not clear the data of Set.
+	 * 
+	 * @param set
+	 *            - Join the data in Set.
+	 * @param commaDelimitedIndices
+	 *            - Use the comma split the reference field
+	 */
 	private void addStringToSetNotClean(Set<String> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
 		for (String idx : indices) {
@@ -206,27 +227,27 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 判斷字串是否無意義
+	 * Judge this String whether it's meaningful
 	 * 
 	 * @param string
-	 *            - 要判斷的字串
-	 * @return 判斷結果，即 string != null || string.trim().length() == 0
+	 *            - The String that be juded.
+	 * @return Judge the result, if string != null || string.trim().length() == 0
 	 */
 	private boolean isEmptyString(String string) {
 		return string == null || string.trim().length() == 0;
 	}
 
 	/**
-	 * 轉換檔案內容
+	 * Start checking the value is whether follow the Critical.
 	 * 
 	 * @param inputFile
-	 *            - 資料輸入來源檔案
+	 *            - Input the Original data file.
 	 * @param outputFile
-	 *            - 資料輸出目的檔案
+	 *            - Output the path of data file.
 	 * @throws IOException
-	 *             如果IO發生錯誤
+	 *            - If IO Error occur.
 	 * @throws IllegalArgumentException
-	 *             所給定的任一參數之指向為資料夾而非檔案
+	 *            - Specify the path of folder rather than a file.
 	 */
 	public void transform(File inputFile, File outputFile) throws IOException, IllegalArgumentException {
 		if (inputFile.isDirectory()) {
@@ -300,7 +321,7 @@ public class DataTransformer {
 			mappingDataFieldLength.put(Integer.toString(whichField), Integer.toString(whichChar));
 			identifyAndInitialLength(whichField, whichLine);
 			identifyFixValue(fieldValue, whichField);
-			//if (whichLine%1000  == 0)
+			if (whichLine%1000  == 0)
 			System.out.println(whichLine);
 			
 			if (fieldCount != whichField+1){
@@ -369,6 +390,16 @@ public class DataTransformer {
 		System.gc();
 	}
 	
+	/**
+	 * Check the same field whether has the same Error of critical.
+	 * 
+	 * @param string
+	 *            - Currently already has Error.
+	 * @param valueOf
+	 *            - check this String Error have existed or not.
+	 * @return string+"| "+valueOf
+	 *            - Return the new Error String.
+	 */
 	private static String checkExit(String string, String valueOf) {
 		String[] indices = string.split("\\|");
 		for(int i = 0 ; i<indices.length ; i++){
@@ -379,8 +410,15 @@ public class DataTransformer {
 		return string+"| "+valueOf;
 	}
 
-
-	private static String byte2hex(byte b) { // 二進制轉16進制字符
+	/**
+	 * Convert from Binary to 16 hexadecimal
+	 * 
+	 * @param b
+	 *            - Input the Binary byte.
+	 * @return hs
+	 *            - Output the 16 hexadecimal.
+	 */
+	private static String byte2hex(byte b) {
 		String hs = "";
 		String stmp = (java.lang.Integer.toHexString(b & 0XFF));
 			if (stmp.length() == 1) {
@@ -391,6 +429,17 @@ public class DataTransformer {
 		return hs.toUpperCase();
 	}
 	
+	
+	/**
+	 * Sort the Report the List item, clarify for review.
+	 * 
+	 * @param amount
+	 *            - Input how many fields.
+	 * @param mapping
+	 *            - Link the mapping for re-sort.
+	 * @return dataString
+	 *            - Output the format report.
+	 */
 	private String sortMap(int amount, HashMap<String, String> mapping) {
 		String dataString="";
 		for(int i = 0 ; i <= amount ; i++){
@@ -401,7 +450,15 @@ public class DataTransformer {
 		return dataString;
 	}
 	
-	
+	/**
+	 * Identify the this field String over or less the length 
+	 * by critical with Property Setting.
+	 * 
+	 * @param fieldAmount
+	 *            - The quantity of fields.
+	 * @param whichLine
+	 *            - This record is which Line in data file.
+	 */
 	private void identifyAndInitialLength(int fieldAmount, int whichLine) {
 		int fieldDataLength = 0;
 		int length;
@@ -434,7 +491,17 @@ public class DataTransformer {
 		//System.out.println(mappingLength);
 	}
 	
-	//@SuppressWarnings("null")
+	
+	/**
+	 * Identify the String with Fixed Value or Which Format.
+	 * F: is the Fixed value.
+	 * N: is the need the format value by Regex Expresion.
+	 * 
+	 * @param fieldValue
+	 *            - The Original of value.
+	 * @param whichField
+	 *            - FieldValue is in which one field.
+	 */
 	private void identifyFixValue(String fieldValue, int whichField) {
 		String fixValue =settings.getProperty(whichField+"F", "").trim();
 		String needValue =settings.getProperty(whichField+"N", "").trim();
@@ -486,8 +553,16 @@ public class DataTransformer {
 		}
 	}
 	
-	
-	private void mappingValueAndKey(String key, int whichLine, int whichField) { // 二進制轉16進制字符
+	/**
+	 * 
+	 * @param key
+	 *            - For Reference Key.
+	 * @param whichLine
+	 *            - For Reference this record is in which Line of data file.
+	 * @param whichField
+	 *            - For Reference this record is in which Field of whichLine.
+	 */
+	private void mappingValueAndKey(String key, int whichLine, int whichField) {
 		String whichLineString = Integer.toString(whichLine);
 		String whichFieldString = Integer.toString(whichField);
 		
