@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import com.iisi.corebanking.data.migration.IllegalCharsetNameException;
+import com.iisi.corebanking.data.migration.UnsupportedCharsetException;
+
 public class DataTransformer {
 	// Constants for internal setting
 	private static final char FIELD_DELIMITER = '|';
@@ -41,12 +44,14 @@ public class DataTransformer {
 	private final ArrayList<Integer> mapFieldExtractSetB;	
 	
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
 	 * 
 	 * @param charsetName
-	 *            - 輸入檔案的編碼名稱
+	 *            - Input the Name of Encoding with file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 * @throws IllegalCharsetNameException
 	 *             If the given charset name is illegal
 	 * @throws IllegalArgumentException
@@ -60,26 +65,29 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
-	 * 
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
+	 *  
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 */
 	public DataTransformer(Charset charset, Properties settings, Properties settingsMsg) {
 		this(charset, System.getProperty("line.separator"), settings, settingsMsg);
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體
-	 * 
+	 * Create an entity of Data Transformer base on the Setting Information.
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param outputFileLineSeperator
-	 *            - 輸出檔案所要使用的換行字元
+	 *            - Output the character of newline that is used
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 */
 	public DataTransformer(Charset charset, String outputFileLineSeperator,
 			Properties settings, Properties settingsMsg) {
@@ -96,7 +104,7 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 初始化實體變數
+	 * Initialize the variable
 	 */
 	private void init() {
 		MAP_NULL_ERRO_DEFAULT =this.settingsMsg.getProperty(MAP_NULL_ERRO_KEY, MAP_NULL_ERRO_DEFAULT);
@@ -125,12 +133,13 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 將以逗號分隔的多個欄位索引分割並trim後轉為Integer加入Set。 若所分割出來的字串無法被轉換為Integer，則會略過該筆資料。
+	 * Use the comma to slit the multi reference of Field number and convert to Integer Int and join to Set.
+	 * If the string cannot convert to Integer, will ignore this reference one. 
 	 * 
 	 * @param set
-	 *            - 要加入資料的Set
+	 *            - Join the data in Set.
 	 * @param commaDelimitedIndices
-	 *            - 逗號分割的欄位索引
+	 *            - Use the comma split the reference field
 	 */
 	private void addToSet(ArrayList<Integer> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
@@ -144,27 +153,29 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 判斷字串是否無意義
+	 * Judge this String whether it's meaningful
 	 * 
 	 * @param string
-	 *            - 要判斷的字串
-	 * @return 判斷結果，即 string != null || string.trim().length() == 0
+	 *            - The String that be juded.
+	 * @return Judge the result, if string != null || string.trim().length() == 0
 	 */
 	private boolean isEmptyString(String string) {
 		return string == null || string.trim().length() == 0;
 	}
 
 	/**
-	 * 轉換檔案內容
+	 * Start Extract the value from File B and insert to File A.
 	 * 
-	 * @param inputFile
-	 *            - 資料輸入來源檔案
+	 * @param inputFileA
+	 *            - Input the Original data file A.
+	 * @param inputFileB
+	 *            - Input the Original data file B.
 	 * @param outputFile
-	 *            - 資料輸出目的檔案
+	 *            - Output the path of data file.
 	 * @throws IOException
-	 *             如果IO發生錯誤
+	 *            - If IO Error occur.
 	 * @throws IllegalArgumentException
-	 *             所給定的任一參數之指向為資料夾而非檔案
+	 *            - Specify the path of folder rather than a file.
 	 */
 	public void transform(File inputFileA, File inputFileB, File outputFile)
 			throws IOException, IllegalArgumentException {
@@ -227,7 +238,14 @@ public class DataTransformer {
 		}
 	}
 
-	// 分開
+	/**
+	 * Separate routine
+	 * 
+	 * @param line
+	 *            - one Record String.
+	 * @return mapping
+	 *            - Return the record Separate List .
+	 */
 	private List<String> lineSeparete(String line) {
 		List<String> list = new ArrayList<String>();
 		list.add(line.substring(0, line.indexOf(FIELD_DELIMITER)));
@@ -245,7 +263,14 @@ public class DataTransformer {
 		return list;
 	}
 	
-	// File B 分開並存入HashMap
+	/**
+	 * Slit the File B Reocord to HashMap
+	 * 
+	 * @param allLines
+	 *            - All the Record List.
+	 * @return mapping
+	 *            - Return the Hashmap list.
+	 */
 	private HashMap<String, String> fileBMap(List<String> allLines) {
 		HashMap<String, String> mapping = new HashMap<String, String>();
 		for (String line : allLines) {
@@ -263,7 +288,14 @@ public class DataTransformer {
 	}
 	
 
-	// 合併
+	/**
+	 * Merge the fields to one String.
+	 * 
+	 * @param lineList
+	 *            - one Record List.
+	 * @return lineMerge
+	 *            - Return the Merge String.
+	 */
 	private String lineMerge(List<String> lineList) {
 		StringBuilder lineMerge = new StringBuilder();
 		for (int i = 0; i < lineList.size(); i++) {

@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import main.java.com.iisi.corebanking.data.migration.IllegalCharsetNameException;
+import main.java.com.iisi.corebanking.data.migration.UnsupportedCharsetException;
+
 public class DataTransformer {
 	// Constants for internal setting
 	private static final char FIELD_DELIMITER = '|';
@@ -61,12 +64,14 @@ public class DataTransformer {
 	private String recordPrefix;
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
 	 * 
 	 * @param charsetName
-	 *            - 輸入檔案的編碼名稱
+	 *            - Input the Name of Encoding with file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 * @throws IllegalCharsetNameException
 	 *             If the given charset name is illegal
 	 * @throws IllegalArgumentException
@@ -80,26 +85,29 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
-	 * 
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
+	 *  
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 */
 	public DataTransformer(Charset charset, Properties settings, Properties settingsMsg) {
 		this(charset, System.getProperty("line.separator"), settings, settingsMsg);
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體
-	 * 
+	 * Create an entity of Data Transformer base on the Setting Information.
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param outputFileLineSeperator
-	 *            - 輸出檔案所要使用的換行字元
+	 *            - Output the character of newline that is used
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 */
 	public DataTransformer(Charset charset, String outputFileLineSeperator, Properties settings, Properties settingsMsg) {
 		super();
@@ -118,7 +126,7 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 初始化實體變數
+	 * Initialize the variable
 	 */
 	private void init() {
 		LENGTH_EXCEEDED_DEFAULT_MSG = this.settingsMsg.getProperty(LENGTH_EXCEEDED_MSG_KEY, LENGTH_EXCEEDED_DEFAULT_MSG);
@@ -151,7 +159,7 @@ public class DataTransformer {
 			addToSet(subValueRepIdxSet, subRepIdx);
 		}
 		
-		// 讀取所設定的欄位數量
+		// Loading the quantity of fields by setting
 		String fieldCountStr = settings.getProperty(EXPECTED_FIELD_COUNT_KEY);
 		if (fieldCountStr != null && fieldCountStr.trim().length() != 0) {
 			try {
@@ -164,12 +172,13 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 將以逗號分隔的多個欄位索引分割並trim後轉為Integer加入Set。 若所分割出來的字串無法被轉換為Integer，則會略過該筆資料。
+	 * Use the comma to slit the multi reference of Field number and convert to Integer Int and join to Set.
+	 * If the string cannot convert to Integer, will ignore this reference one. 
 	 * 
 	 * @param set
-	 *            - 要加入資料的Set
+	 *            - Join the data in Set.
 	 * @param commaDelimitedIndices
-	 *            - 逗號分割的欄位索引
+	 *            - Use the comma split the reference field
 	 */
 	private void addToSet(Set<Integer> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
@@ -183,27 +192,27 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 判斷字串是否無意義
+	 * Judge this String whether it's meaningful
 	 * 
 	 * @param string
-	 *            - 要判斷的字串
-	 * @return 判斷結果，即 string != null || string.trim().length() == 0
+	 *            - The String that be juded.
+	 * @return Judge the result, if string != null || string.trim().length() == 0
 	 */
 	private boolean isEmptyString(String string) {
 		return string == null || string.trim().length() == 0;
 	}
 
 	/**
-	 * 轉換檔案內容
+	 * Start insert the Delimiter Value and checking the Length.
 	 * 
 	 * @param inputFile
-	 *            - 資料輸入來源檔案
+	 *            - Input the Original data file.
 	 * @param outputFile
-	 *            - 資料輸出目的檔案
+	 *            - Output the path of data file.
 	 * @throws IOException
-	 *             如果IO發生錯誤
+	 *            - If IO Error occur.
 	 * @throws IllegalArgumentException
-	 *             所給定的任一參數之指向為資料夾而非檔案
+	 *            - Specify the path of folder rather than a file.
 	 */
 	public void transform(File inputFile, File outputFile) throws IOException, IllegalArgumentException {
 		if (inputFile.isDirectory()) {
@@ -244,11 +253,12 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 處理資料(一行)
+	 * Dispose the data (one Record)
 	 * 
 	 * @param line
-	 *            - 要處理的資料
-	 * @return 處理過的資料
+	 *            - The data for split.
+	 * @return processedRecord
+	 *            - The record is formated.
 	 */
 	private String processRecord(String line) {
 
@@ -329,15 +339,16 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 處理多值欄位資料(Multi-value或Sub-group)
+	 * Dispose the multi value of the specify fields (Multi-value or Sub-group)
 	 * 
 	 * @param currentField
-	 *            - 要處理的欄位資料
+	 *            - The value of specify the value
 	 * @param fieldTypeIndicator
-	 *            - 指定是處理Multi-value或Sub-group，請使用常數來指定
-	 * @return 處理過後的欄位資料
+	 *            - specify the delimiter by Multi-value or Sub-value, Please use the constant to assign.
+	 * @return processedFieldData
+	 *            - The value is formated after.
 	 * @throws IllegalArgumentException
-	 *             如果fieldTypeIndicator所給的值無法解析
+	 *            - If the value of fieldTypeIndicator cannot analyze.
 	 */
 	private String handleMultiAndSubField(String currentField, int fieldTypeIndicator, int cutLengthInt) {
 		// skip following logic if length dose not exceed max length
@@ -386,7 +397,20 @@ public class DataTransformer {
 	}
 	
 	
-	
+	/**
+	 * Replace the Delimiter to Multi Value or Sub Value.
+	 * 
+	 * @param currentField
+	 *            - Dispose the value need to be formated.
+	 * @param fieldTypeIndicator
+	 *            - The condition for specify the delimiter to replace.
+	 * @param cutLengthInt
+	 *            - .Criteria the Value in the Length.
+	 * @param whichField
+	 *            - For reference the which Field.
+	 * @return processedFieldData
+	 *            - The value is formated after.
+	 */
 	private String handleMultiAndSubFieldReplace(String currentField, int fieldTypeIndicator, int cutLengthInt, String whichField){
 		// Determine delimiter
 		StringBuilder processedFieldData = new StringBuilder();
@@ -424,6 +448,17 @@ public class DataTransformer {
 		return processedFieldData.toString();//+LENGTH_EXCEEDED_DEFAULT_MSG;
 	}
 	
+	
+	/**
+	 * Replace the all value to Fixed Value..
+	 * 
+	 * @param currentField
+	 *            - Dispose the value need to be formated.
+	 * @param replaceAll
+	 *            - New Value to replace.
+	 * @return processedFieldData
+	 *            - The value is formated after.
+	 */
 	private String repalceAllCondition(String currentField, String replaceAll){
 		StringBuilder processedFieldData = new StringBuilder();
 		String[] replaceAllSplit = replaceAll.split(",,", -1);
@@ -440,11 +475,16 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 處理單值欄位資料，如果資料太長會加上錯誤訊息
+	 * If the value over the specify Length, will join the Error Message.
 	 * 
 	 * @param currentField
-	 *            - 要處理的欄位資料
-	 * @return 處理過後的欄位資料
+	 *            - Dispose the value need to be formated
+	 * @param cutLengthInt
+	 *            - The reference for criteria that how length.
+	 * @param whichField
+	 *            - The reference for Error Message in which field.
+	 * @return currentField
+	 *            - The value is formated after.
 	 */
 	//Length Message
 	private String handleSingleFiled(String currentField, int cutLengthInt, String whichField) {

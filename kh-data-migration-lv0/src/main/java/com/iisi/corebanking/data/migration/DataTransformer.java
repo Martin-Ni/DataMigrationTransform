@@ -8,10 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -70,6 +68,8 @@ public class DataTransformer {
 	 *            - Input the Name of Encoding with file.
 	 * @param settings
 	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 * @throws IllegalCharsetNameException
 	 *             If the given charset name is illegal
 	 * @throws IllegalArgumentException
@@ -89,6 +89,8 @@ public class DataTransformer {
 	 *            - Input the encoding of file.
 	 * @param settings
 	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 */
 	public DataTransformer(Charset charset, Properties settings, Properties settingsMsg) {
 		this(charset, System.getProperty("line.separator"), settings, settingsMsg);
@@ -102,6 +104,8 @@ public class DataTransformer {
 	 *            - Output the character of newline that is used
 	 * @param settings
 	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
 	 */
 	public DataTransformer(Charset charset, String outputFileLineSeperator, Properties settings, Properties settingsMsg) {
 		super();
@@ -391,7 +395,7 @@ public class DataTransformer {
 	}
 	
 	/**
-	 * Check the same field whether has the same Error of critical.
+	 * Check the same field whether has the same Error of criteria.
 	 * 
 	 * @param string
 	 *            - Currently already has Error.

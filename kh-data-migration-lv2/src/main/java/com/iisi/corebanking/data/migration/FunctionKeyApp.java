@@ -1,9 +1,7 @@
 package main.java.com.iisi.corebanking.data.migration;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +17,20 @@ public class FunctionKeyApp {
 	private List<String> lineList;
 	private final String migrationDate = "20150911";
 	
-	public FunctionKeyApp(Properties settings, char delimiter, String lineSeperator,  Properties settingTOA, Properties settingCS){
+	/**
+	 * Create an entity of Information for Function Key Application.
+	 * @param settings
+	 *            - The each module the criteria Setting.
+	 * @param delimiter
+	 *            -  Define the Delimiter "|".
+	 * @param lineSeperator
+	 *            -  Define the newline character.
+	 * @param settingTOA
+	 *            - Loading the Internal Account List.
+	 * @param settingCS
+	 *            - Loading the Clearing Suspence Internal Account List.
+	 */
+	public FunctionKeyApp(Properties settings, char delimiter, String lineSeperator, Properties settingTOA, Properties settingCS){
 		this.settings = settings;
 		this.settingTOA = settingTOA;
 		this.settingCS = settingCS;
@@ -27,21 +38,51 @@ public class FunctionKeyApp {
 		this.lineSeperator = lineSeperator;
 	}
 	
+	/**
+	 * Initialize the One Record Separate to Mapping.
+	 * 
+	 * @param line
+	 *            - One Record String.
+	 */
 	public void fn_setTheLineList(String line){
 		this.lineList = lineSeparete(line);
 	}
+	
+	/**
+	 * Initialize the One Record Separate to Mapping.
+	 * @param line
+	 *            - One Record String.
+	 * @return lineSeparate(line);
+	 *            - The List of one Record Mapping.
+	 */
 	public List<String> fn_newTheLineList(String line){
 		return lineSeparete(line);
 	}
 	
-	
+	/**
+	 * Insert the original value to specify position.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return onlyInsertField
+	 *            - Return the Value by one Record.
+	 */
 	public String fn_onlyInsertOriginal(String configSingleValue){
 		String onlyInsertField = this.lineList.get(Integer.parseInt(configSingleValue)).trim();
 		return onlyInsertField;
 	}
 	
+	/**
+	 * Insert the Company Code that by format from Account or other reference.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @param uploadCompanyCode
+	 *            - Company material.
+	 * @return acCompanyCodeString;
+	 *            - Return the Company.Code.
+	 */
 	public String fn_acCompanyCode(String configSingleValue, String uploadCompanyCode){
-		
 		String acCompanyCodeString ="";
 		if (!settings.getProperty("fn", "").trim().equals("GL")) {
 		acCompanyCodeString = uploadCompanyCode+getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
@@ -53,6 +94,14 @@ public class FunctionKeyApp {
 		return acCompanyCodeString;
 	}
 	
+	/**
+	 * Insert the Other dynamic state Value. e.g. Date or Blank.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return insertOtherString;
+	 *            - Return the Company.Code.
+	 */
 	public String fn_insertOther(String configSingleValue){
 		String insertOtherString = getIndexOrValue(configSingleValue, null);
 		if (insertOtherString.equalsIgnoreCase("DATE")) {
@@ -65,14 +114,34 @@ public class FunctionKeyApp {
 		return insertOtherString;
 	}
 	
+	/**
+	 * Insert the Cheque Clearing Suspence base on the Account.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @param uploadCompanyCode
+	 *            - Company material.
+	 * @return csString;
+	 *            - Return Cheque Clearing Suspence Internal Account.
+	 */
 	public String fn_clearingSuspense(String configSingleValue, String uploadCompanyCode){
 		String csString = uploadCompanyCode+getIndexOrValue(configSingleValue, this.lineList).substring(0,3)+this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
 		csString = settingCS.getProperty(csString);
 		return csString;
 	}
 	
+	/**
+	 * Insert the Internal Account base on the Amount greater or less Zero,
+	 * Reference by Account or others.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @param uploadCompanyCode
+	 *            - Company material.
+	 * @return toaJudgeString;
+	 *            - Return the Value of Judge.
+	 */
 	public String fn_TOAJudge(String configSingleValue, String uploadCompanyCode){
-
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		
 		//BigDecimal availableBalance = getBigDecimal((this.lineList.get(Integer.parseInt(putArray[0])).trim()));
@@ -121,11 +190,27 @@ public class FunctionKeyApp {
 		return toaJudgeString;
 	}
 	
+	/**
+	 * Reformat the numerical to two decimal.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return negateString;
+	 *            - Return the numerical is formated.
+	 */
 	public String fn_negateValue(String configSingleValue){
 		String negateString = getBigDecimal(getIndexOrValue(configSingleValue, this.lineList)).toString();//.negate().toString();
 		return negateString;
 	}
 	
+	/**
+	 * Calculate the Two value and rounding to two decimal.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return combineString;
+	 *            - Return total amount.
+	 */
 	public String fn_combine2FieldValue(String configSingleValue){
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		//BigDecimal availableBalance = getBigDecimal(this.lineList.get(Integer.parseInt(putArray[0].trim())));
@@ -144,6 +229,14 @@ public class FunctionKeyApp {
 		return combineString;
 	}
 	
+	/**
+	 * Insert the Internal Account base on account or other reference.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return toaString;
+	 *            - Return Internal Account.
+	 */
 	public String fn_onlyTOAInsert(String configSingleValue, String uploadCompanyCode){
 		String toaConditionString = uploadCompanyCode;
 		String branchCodeString = getIndexOrValue(configSingleValue, this.lineList).substring(0,3);
@@ -153,6 +246,14 @@ public class FunctionKeyApp {
 		return toaString;
 	}
 	
+	/**
+	 * Insert the Internal Account base on account or other reference with Currency.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return toaString;
+	 *            - Return Internal Account.
+	 */
 	public String fn_branchTOAInsert(String configSingleValue){
 		String branchCodeString = getIndexOrValue(configSingleValue, this.lineList);
 		String currencyCodeString = this.lineList.get(Integer.parseInt(settings.getProperty("CY")));
@@ -166,6 +267,14 @@ public class FunctionKeyApp {
 	Set<String> ListMap = new HashSet<String>();
 	HashMap<String, String> mapValue = new HashMap<String, String>();
 	
+	/**
+	 * Base on the fn_limitZero to format LIMIT.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return Limit_formatLine_Parent +lineSeperator+ Limit_formatLine_Child;
+	 *            - Return Limit data file.
+	 */
 	public String fn_getLimitZero(){
 		for(String keyValue : ListMap){
 			Limit_formatLine_Parent += mapValue.get(keyValue) +lineSeperator;
@@ -173,14 +282,16 @@ public class FunctionKeyApp {
 		return Limit_formatLine_Parent +lineSeperator+ Limit_formatLine_Child;
 	}
 	
+	/**
+	 * Customization the LIMIT format.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 */
 	public String fn_limitZero(String configSingleValue) {
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		String limitRef= fn_onlyInsertOriginal(putArray[0]);
-		/*
-		String[] expiryDate = settings.getProperty("EXPIRY.DATE").split(",");
-		int expiryDateValue = Integer.parseInt(lineList.get(Integer.parseInt(expiryDate[0].trim())));
-		int expiryDateIndex = Integer.parseInt(migrationDate.trim());
-		*/
+
 		String getContrastValue = putArray[2].trim();
 		int indexStart = limitRef.lastIndexOf(putArray[1].trim()) - getContrastValue.length();
 		int indexEnd = indexStart + getContrastValue.length();
@@ -194,7 +305,6 @@ public class FunctionKeyApp {
 			}
 			Limit_formatLine_Parent += lineSeperator;
 		} else {
-			/*if (expiryDateValue >= expiryDateIndex){*/
 				for (int i = 0 ; i < lineList.size() ; i++) {
 					if (i != 0) {
 						Limit_formatLine_Child += FIELD_DELIMITER;
@@ -202,7 +312,6 @@ public class FunctionKeyApp {
 					Limit_formatLine_Child += lineList.get(i);
 				}
 				Limit_formatLine_Child += lineSeperator;
-			/*}*/
 			
 			String key = limitRef.substring(0, limitRef.lastIndexOf(".") 
 					- getContrastValue.length())
@@ -272,33 +381,29 @@ public class FunctionKeyApp {
 	}
 	
 	StringBuilder customer = new StringBuilder();
+	/**
+	 * After fn_CustomerFormat to format CUSTOMER, output the data file.
+	 * 
+	 * @return customer.toString();;
+	 *            - Return CUSTOMER data file.
+	 */
 	public String fn_getEmailFormat() {
 		return customer.toString();
 	}
 	
+	/**
+	 * Customization the CUSTOMER format.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return Blank
+	 */
 	public String fn_CustomerFormat(String configSingleValue) {
-		//String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
-		/*
-		int emailField = 60;
-		String originalString = "_";
-		String replaceString = "'_'";
-		if (lineList.get(emailField) != "" && lineList.get(emailField).indexOf(originalString.trim()) >= 0) {
-			lineList.set(emailField, areplace(lineList.get(emailField), originalString, replaceString, lineList.get(emailField).indexOf(originalString)));
-		}*/
-		
 		String replaceCondition = getIndexOrValue("A", null).trim();
 		if (!replaceCondition.equals("")){
 			fn_Replace(replaceCondition);
 		}
-		/*
-		int streetField = 6;
-		int addressField = 7; 
-		String addressString = lineList.get(addressField);
-		int addrStgDlmtrPosition = addressString.length(); 
-		//String newStreet = addrStgDlmtrPosition >= 0 ? addressString.substring(0, addrStgDlmtrPosition) : addressString;
-		String newStreet = addrStgDlmtrPosition > 33 ? addressString.substring(0, 33) : addressString;
-		lineList.set(streetField, newStreet);
-		*/
+
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
 				customer.append(FIELD_DELIMITER);
@@ -310,11 +415,24 @@ public class FunctionKeyApp {
 	}
 	
 	int ix =1;
+	/**
+	 * Base on the fn_GroupFormat to format Group.
+	 * 
+	 * @return group.toString();;
+	 *            - Return Format Sting for group.
+	 */
 	StringBuilder group = new StringBuilder();
 	public String fn_getGroupFormat() {
 		return group.toString();
 	}
 	
+	/**
+	 * Base on the quantity of value, format other field to use the same value duplicate.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return Blank
+	 */
 	public String fn_GroupFormat(String configSingleValue) {
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		String getContrastValue = "";
@@ -357,12 +475,24 @@ public class FunctionKeyApp {
 		return "";
 	}
 	
-	
+	/**
+	 * After Customization the IB.Pay.Account format, , output the data file.
+	 * 
+	 * @return groupIB
+	 *            - Return the IB.Pay.Account Data file.
+	 */
 	StringBuilder groupIB = new StringBuilder();
 	public String fn_getIBFormat() {
 		return groupIB.toString();
 	}
 	
+	/**
+	 * Customization the IB.Pay.Account format.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return ""
+	 */
 	public String fn_IBFormat(String configSingleValue) {
 		String[] putArray = getIndexOrValue(configSingleValue, null).split(",");
 		String getContrastValue = "";
@@ -372,7 +502,6 @@ public class FunctionKeyApp {
 			int amountCut = stringCut.length;
 			getContrastValue = lineList.get(Integer.parseInt(putArray[pair+1].trim()));
 			
-			//newValue += getContrastValue;
 			if (amountCut >= 1 && !getContrastValue.equals("")) {
 				for (int plus = 0 ; plus < amountCut ; plus++) {
 					if (plus != 0) {
@@ -407,21 +536,32 @@ public class FunctionKeyApp {
 		return "";
 	}
 	
+	/**
+	 * After Customization the AA.Deposit format, output the data file.
+	 * 
+	 * @return aaDeposit
+	 *            - Output the AA.Deposit data file.
+	 */
 	StringBuilder aaDeposit = new StringBuilder();
 	public String fn_getaaDeposit() {
 		return aaDeposit.toString();
 	}
 	
+	/**
+	 * Customization the AA.Deposit format.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 * @return ""
+	 */
 	public String fn_aaDeposit(String configSingleValue) {
 		String allField = lineList.get(21);
 		String allValue = lineList.get(22);
 		String customerField = allField.split("::")[0];
 		String customerValue = allValue.split("::")[0];
-		String[] customerFieldNameArray = customerField.split("!!");
+		//String[] customerFieldNameArray = customerField.split("!!");
 		String[] customerFieldValueArray = customerValue.split("!!");
 		String fullName = customerFieldValueArray[customerFieldValueArray.length-1];
-		
-		
 		
 		if (fullName.length() > 65) {
 		String newValueString = handleMultiAndSubField(fullName, "!!", 65);
@@ -436,7 +576,6 @@ public class FunctionKeyApp {
 		String newCustomerValue = customerValue.replace(fullName, newValueString);
 		lineList.set(21, allField.replace(customerField, newCustomerField));
 		lineList.set(22, allValue.replace(customerValue, newCustomerValue));
-		//String newFieldName = 
 		}
 		for (int i = 0 ; i < lineList.size() ; i++) {
 			if (i != 0) {
@@ -449,10 +588,23 @@ public class FunctionKeyApp {
 		return "";
 	}
 	
+	/**
+	 * The function for replace the specify character.
+	 * 
+	 * @return stringByReplace
+	 *                  - The format string. 
+	 */
 	StringBuilder stringByReplace = new StringBuilder();
 	public String fn_getReplaceInterface() {
 		return stringByReplace.toString();
 	}
+	
+	
+	/**
+	 * TReplace the specify character DAO.
+	 * 
+	 * @return Blank
+	 */
 	public String fn_ReplaceInterface() {
 		String replaceCondition = getIndexOrValue("A", null).trim();
 		if (!replaceCondition.equals("")) {
@@ -471,6 +623,12 @@ public class FunctionKeyApp {
 	}
 	
 	
+	/**
+	 * Replace the specify character DAO.
+	 * 
+	 * @return newContent.toString()
+	 *               - The format String.
+	 */
 	public static String areplace(String str, String patten,
 			String replacement, int pos) {
 		int len = str.length();
@@ -489,6 +647,12 @@ public class FunctionKeyApp {
 		return newContent.toString();
 	}
 	
+	/**
+	 * Replace the specify character DAO.
+	 * 
+	 * @param configSingleValue
+	 *            - One Record String.
+	 */
 	private void fn_Replace(String replaceCondition){
 		String[] replaceConditionArray = replaceCondition.split("\\|");
 		for (int i = 0 ; i < replaceConditionArray.length ; i+=3) {
@@ -499,14 +663,29 @@ public class FunctionKeyApp {
 		}		
 	}
 	
+	/**
+	 * Mapping the Internal Account.
+	 * 
+	 * @param toaStringKey
+	 *            - Reference String.
+	 * @return toaStringKey
+	 *            - return the Internal Account.
+	 */
 	private String getTOAString (String toaStringKey){
 		toaStringKey = settingTOA.getProperty(toaStringKey);
 		return toaStringKey;
 	}
 	
-	
-
-	
+	/**
+	 * Subroutin for get the value form property. 
+	 * 
+	 * @param configSingleValue
+	 *            - Reference String.
+	 * @param lineList
+	 *            - Reference List.
+	 * @return configFieldValue
+	 *            - return property Value.
+	 */
 	private String getIndexOrValue (String configSingleValue, List<String> lineList){
 		String configFieldValue;
 		configFieldValue=settings.getProperty(configSingleValue, "").trim();
@@ -517,17 +696,40 @@ public class FunctionKeyApp {
 		return configFieldValue;
 	}
 
+	/**
+	 * Format to Two decimal. 
+	 * 
+	 * @param moneyInput
+	 *            - total amount.
+	 * @return moneyOutput
+	 *            - return the format value.
+	 */
 	private BigDecimal getBigDecimal(String moneyInput){
 		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(2, BigDecimal.ROUND_HALF_UP);//
 		return moneyOutput;
 	}
 	
+	/**
+	 * Format to Zero decimal. 
+	 * 
+	 * @param moneyInput
+	 *            - total amount.
+	 * @return moneyOutput
+	 *            - return the format value.
+	 */
 	private BigDecimal getBigDecimalNoPoint(String moneyInput){
 		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(0,BigDecimal.ROUND_HALF_UP);
 		return moneyOutput;
 	}
-	
-	// ¤À¶}
+
+	/**
+	 * Subroutine for separate the line record. 
+	 * 
+	 * @param line
+	 *            - One Record String.
+	 * @return list
+	 *            - return field List.
+	 */
 	private List<String> lineSeparete(String line) {
 		List<String> list = new ArrayList<String>();
 		list.add(line.substring(0, line.indexOf(FIELD_DELIMITER)));
@@ -545,6 +747,18 @@ public class FunctionKeyApp {
 		return list;
 	}
 	
+	/**
+	 * Subroutine for insert the delimiter base on sub Value or multi value and field length. 
+	 * 
+	 * @param currentField
+	 *            - the value 
+	 * @param delimiter
+	 *            - Define the delimiter.
+	 * @param cutLengthInt
+	 *            - Define the length.
+	 * @return processedFieldData
+	 *            - return format String List.
+	 */
 	private String handleMultiAndSubField(String currentField, String delimiter, int cutLengthInt) {
 		String cutData = "";
 		StringBuilder processedFieldData = new StringBuilder();

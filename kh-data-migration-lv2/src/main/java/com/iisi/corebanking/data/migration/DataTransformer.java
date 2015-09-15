@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.iisi.corebanking.data.migration.IllegalCharsetNameException;
+import com.iisi.corebanking.data.migration.UnsupportedCharsetException;
+
 public class DataTransformer {
 	// Constants for internal setting
 	private static final char FIELD_DELIMITER = '|';
@@ -20,7 +23,7 @@ public class DataTransformer {
 	private static final String UPLOAD_COMPANY_KEY = "upload.company";
 	private static final String FIELD_OF_NEW_FILE_KEY = "field.of.new.file";
 	
-	//Property keys (Error Message)
+	// Property keys (Error Message)
 	
 	// Default values (Error Message)
 	private final Charset charset;
@@ -33,12 +36,18 @@ public class DataTransformer {
 	private final ArrayList<String> fileOfNewFileList;
 	
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
 	 * 
 	 * @param charsetName
-	 *            - 輸入檔案的編碼名稱
+	 *            - Input the Name of Encoding with file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
+	 * @param settingTOA
+	 *            - Input the Internal Account List
+	 * @param settingCS
+	 *            - Input the Clearing Suspence List
 	 * @throws IllegalCharsetNameException
 	 *             If the given charset name is illegal
 	 * @throws IllegalArgumentException
@@ -52,26 +61,37 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
-	 * 
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
+	 *  
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
+	 * @param settingTOA
+	 *            - Input the Internal Account List
+	 * @param settingCS
+	 *            - Input the Clearing Suspence List
 	 */
 	public DataTransformer(Charset charset, Properties settings, Properties settingsMsg, Properties settingTOA, Properties settingCS) {
 		this(charset, System.getProperty("line.separator"), settings, settingsMsg, settingTOA, settingCS);
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體
-	 * 
+	 * Create an entity of Data Transformer base on the Setting Information.
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param outputFileLineSeperator
-	 *            - 輸出檔案所要使用的換行字元
+	 *            - Output the character of newline that is used
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
+	 * @param settingTOA
+	 *            - Input the Internal Account List
+	 * @param settingCS
+	 *            - Input the Clearing Suspence List
 	 */
 	public DataTransformer(Charset charset, String outputFileLineSeperator,
 			Properties settings, Properties settingsMsg, Properties settingTOA, Properties settingCS) {
@@ -86,8 +106,9 @@ public class DataTransformer {
 		init();
 	}
 
+
 	/**
-	 * 初始化實體變數
+	 * Initialize the variable
 	 */
 	private void init() {
 		String fileOfNewFile = settings.getProperty(FIELD_OF_NEW_FILE_KEY);
@@ -97,12 +118,13 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 將以逗號分隔的多個欄位索引分割並trim後轉為Integer加入Set。 若所分割出來的字串無法被轉換為Integer，則會略過該筆資料。
+	 * Use the comma to slit the multi reference of Field number and convert to Integer Int and join to Set.
+	 * If the string cannot convert to Integer, will ignore this reference one. 
 	 * 
 	 * @param set
-	 *            - 要加入資料的Set
+	 *            - Join the data in Set.
 	 * @param commaDelimitedIndices
-	 *            - 逗號分割的欄位索引
+	 *            - Use the comma split the reference field
 	 */
 	private void addToList(ArrayList<String> set, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
@@ -117,27 +139,27 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 判斷字串是否無意義
+	 * Judge this String whether it's meaningful
 	 * 
 	 * @param string
-	 *            - 要判斷的字串
-	 * @return 判斷結果，即 string != null || string.trim().length() == 0
+	 *            - The String that be juded.
+	 * @return Judge the result, if string != null || string.trim().length() == 0
 	 */
 	private boolean isEmptyString(String string) {
 		return string == null || string.trim().length() == 0;
 	}
 
 	/**
-	 * 轉換檔案內容
+	 * Start checking the value is whether follow the Critical.
 	 * 
 	 * @param inputFile
-	 *            - 資料輸入來源檔案
+	 *            - Input the Original data file.
 	 * @param outputFile
-	 *            - 資料輸出目的檔案
+	 *            - Output the path of data file.
 	 * @throws IOException
-	 *             如果IO發生錯誤
+	 *            - If IO Error occur.
 	 * @throws IllegalArgumentException
-	 *             所給定的任一參數之指向為資料夾而非檔案
+	 *            - Specify the path of folder rather than a file.
 	 */
 	public void transform(File inputFile, File outputFile)
 			throws IOException, IllegalArgumentException {

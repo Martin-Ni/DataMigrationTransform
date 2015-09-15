@@ -3,11 +3,11 @@ package main.java.com.iisi.corebanking.data.migration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 public class FunctionKeyApp {
+	@SuppressWarnings("unused")
 	private static char FIELD_DELIMITER;
 	private final String lineSeperator;
 	private final Properties settings;
@@ -38,12 +38,13 @@ public class FunctionKeyApp {
 	 * @param outputFileLineSeperator
 	 *            - Output the newLine character.
 	 * @param settings
-	 *            - The critical setting of property.
+	 *            - The criteria setting of property.
 	 * @param settingsMsg
 	 *            - The Error Message description of property.
 	 * @param DELIMITER
 	 *            - The delimiter character.
 	 */
+	@SuppressWarnings("static-access")
 	public FunctionKeyApp(String outputFileLineSeperator, Properties settings, Properties settingsMsg, char DELIMITER){
 		this.settings = settings;
 		//this.settingsMsg = settingsMsg;

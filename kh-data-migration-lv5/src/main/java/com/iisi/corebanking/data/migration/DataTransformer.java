@@ -47,12 +47,16 @@ public class DataTransformer {
 	private String csvTitle;
 	private int lineBCount = 0;
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
 	 * 
 	 * @param charsetName
-	 *            - 輸入檔案的編碼名稱
+	 *            - Input the Name of Encoding with file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
+	 * @param codits
+	 *            - the condition of rule
 	 * @throws IllegalCharsetNameException
 	 *             If the given charset name is illegal
 	 * @throws IllegalArgumentException
@@ -66,26 +70,33 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體。輸出檔案將會使用系統預設的換行字元。
-	 * 
+	 * Create an entity of Data Transformer. When you Output, it will use the default the encoding of newline.  
+	 *  
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
+	 * @param codits
+	 *            - the condition of rule
 	 */
 	public DataTransformer(Charset charset, Properties settings, Properties settingsMsg, String codits) {
 		this(charset, System.getProperty("line.separator"), settings, settingsMsg, codits);
 	}
 
 	/**
-	 * 依照所給定的設定建立一個DataTransformer實體
-	 * 
+	 * Create an entity of Data Transformer base on the Setting Information.
 	 * @param charset
-	 *            - 輸入檔案的編碼
+	 *            - Input the encoding of file.
 	 * @param outputFileLineSeperator
-	 *            - 輸出檔案所要使用的換行字元
+	 *            - Output the character of newline that is used
 	 * @param settings
-	 *            - 含有設定資訊的Properties
+	 *            - Input the Properties of Setting information
+	 * @param settingsMsg
+	 *            - Input the Properties of Setting Error Message
+	 * @param codits
+	 *            - the condition of rule
 	 */
 	public DataTransformer(Charset charset, String outputFileLineSeperator,
 			Properties settings, Properties settingsMsg, String codits) {
@@ -105,7 +116,7 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 初始化實體變數
+	 * Initialize the variable
 	 */
 	private void init() {
 		MAP_NULL_ERRO_DEFAULT =this.settingsMsg.getProperty(MAP_NULL_ERRO_KEY, MAP_NULL_ERRO_DEFAULT);
@@ -129,12 +140,13 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 將以逗號分隔的多個欄位索引分割並trim後轉為Integer加入Set。 若所分割出來的字串無法被轉換為Integer，則會略過該筆資料。
+	 * Use the comma to slit the multi reference of Field number and convert to Integer Int and join to Set.
+	 * If the string cannot convert to Integer, will ignore this reference one. 
 	 * 
 	 * @param set
-	 *            - 要加入資料的Set
+	 *            - Join the data in Set.
 	 * @param commaDelimitedIndices
-	 *            - 逗號分割的欄位索引
+	 *            - Use the comma split the reference field
 	 */
 	private void addToSet(ArrayList<Integer> list, String commaDelimitedIndices) {
 		String[] indices = commaDelimitedIndices.split(",");
@@ -148,27 +160,27 @@ public class DataTransformer {
 	}
 
 	/**
-	 * 判斷字串是否無意義
+	 * Judge this String whether it's meaningful
 	 * 
 	 * @param string
-	 *            - 要判斷的字串
-	 * @return 判斷結果，即 string != null || string.trim().length() == 0
+	 *            - The String that be juded.
+	 * @return Judge the result, if string != null || string.trim().length() == 0
 	 */
 	private boolean isEmptyString(String string) {
 		return string == null || string.trim().length() == 0;
 	}
 
 	/**
-	 * 轉換檔案內容
+	 * Start to compare the data is the same or not.
 	 * 
 	 * @param inputFile
-	 *            - 資料輸入來源檔案
+	 *            - Input the Original data file.
 	 * @param outputFile
-	 *            - 資料輸出目的檔案
+	 *            - Output the path of data file.
 	 * @throws IOException
-	 *             如果IO發生錯誤
+	 *            - If IO Error occur.
 	 * @throws IllegalArgumentException
-	 *             所給定的任一參數之指向為資料夾而非檔案
+	 *            - Specify the path of folder rather than a file.
 	 */
 	public void transform(File inputFileA, File inputFileB, File outputFile)
 			throws IOException, IllegalArgumentException {
@@ -278,7 +290,14 @@ public class DataTransformer {
 		}
 	}
 
-	// 分開
+	/**
+	 * Separate routine
+	 * 
+	 * @param line
+	 *            - one Record String.
+	 * @return mapping
+	 *            - Return the record Separate List .
+	 */
 	private List<String> lineSeparete(String line) {
 		List<String> list = new ArrayList<String>();
 		list.add(line.substring(0, line.indexOf(FIELD_DELIMITER)));
@@ -296,7 +315,15 @@ public class DataTransformer {
 		return list;
 	}
 	
-	// File B 分開並存入HashMap
+	
+	/**
+	 * Slit the File B Reocord to HashMap
+	 * 
+	 * @param allLines
+	 *            - All the Record List.
+	 * @return mapping
+	 *            - Return the Hashmap list.
+	 */
 	private HashMap<String, String> fileBMap(List<String> allLines) {
 		HashMap<String, String> mapping = new HashMap<String, String>();
 		int lineBCount = 0;
@@ -316,6 +343,16 @@ public class DataTransformer {
 		return mapping;
 	}
 	
+	/**
+	 * Setting the Primary Key for Reference
+	 * 
+	 * @param indexString
+	 *            - The reference which fields combine to one Primary Key.
+	 * @param lineStringList
+	 *            - The value list in one record.
+	 * @return primaryKey
+	 *            - Return the primary key.
+	 **/
 	private String getPrimaryKey(String indexString, List<String> lineStringList) {
 		String[] indexArray = indexString.split(",");
 		String primaryKey = "";
@@ -328,21 +365,16 @@ public class DataTransformer {
 		return primaryKey;
 	}
 	
+	/**
+	 * Format to two decimal numeric for compare. 
+	 * 
+	 * @param moneyInput
+	 *            - The numeric value.
+	 * @return moneyOutput
+	 *            - Return the numeric value of two decimal.
+	 **/
 	private BigDecimal getBigDecimalNoPoint(String moneyInput){
 		BigDecimal moneyOutput = new BigDecimal (moneyInput).setScale(2,BigDecimal.ROUND_HALF_UP);
 		return moneyOutput;
-	}
-	
-
-	// 合併
-	private String lineMerge(List<String> lineList) {
-		StringBuilder lineMerge = new StringBuilder();
-		for (int i = 0; i < lineList.size(); i++) {
-			if (i != 0) {
-				lineMerge.append(FIELD_DELIMITER);
-			}
-			lineMerge.append(lineList.get(i));
-		}
-		return lineMerge.toString();
 	}
 }

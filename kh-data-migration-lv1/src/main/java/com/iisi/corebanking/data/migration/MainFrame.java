@@ -207,7 +207,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * 初始化按鈕功能
+	 * Initializes The Button of Function.
 	 */
 	private void initBtns() {
 		// Open Source Folder
@@ -262,7 +262,7 @@ public class MainFrame extends JFrame {
 
 					for (File f : fs) {
 						ta.append("Read file [ " + f + " ]\n");
-						// 讀取設定檔
+						// Loading the Setting File
 						String prefixRegex = "^" + txtPrefix.getText();
 						String suffixRegex = txtSuffix.getText() + "$";
 						String configFileName = f.getName().replaceFirst(prefixRegex, "").replaceFirst(suffixRegex, "") + txtConfigSuffix.getText();
@@ -271,14 +271,14 @@ public class MainFrame extends JFrame {
 						FileReader fr = new FileReader(new File(chooserConfig.getSelectedFile(), configFileName));
 						setting.load(fr);
 						fr.close();
-						// 取得輸出檔案名稱
+						// Getting the File Name of Output
 						File outputFile = new File(chooserOut.getSelectedFile(), f.getName());
 						if (outputFile.exists()) {
 							String newFileName = dateFormat.format(new Date()) + " " + f.getName();
 							outputFile = new File(chooserOut.getSelectedFile(), newFileName);
 						}
 						ta.append("Output file: " + outputFile + "\n");
-						// 轉換資料
+						// Start to transfer the Data.
 						ta.append("Initialize DataTransformer\n");
 						DataTransformer transformer = new DataTransformer(charsetName, setting, settingMsg);
 						transformer.transform(f, outputFile);
@@ -388,7 +388,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * 將所選定的資料夾印路徑在畫面上
+	 * Display the Path of Folder that be choose in the View.
 	 */
 	private void printFolderPaths() {
 		ta.append("\n");
@@ -399,8 +399,8 @@ public class MainFrame extends JFrame {
 		ta.append("Output File Directory: " + chooserOut.getSelectedFile().getAbsolutePath());
 	}
 	/**
-	 * 將Exception印在畫面上
-	 * @param e - 要輸出的Exception
+	 * Display the Exception on the View.
+	 * @param e - Output Exception
 	 */
 	private void printException(Exception e) {
 		ta.append("\n");

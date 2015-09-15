@@ -225,7 +225,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * 初始化按鈕功能
+	 * Initializes The Button of Function.
 	 */
 	private void initBtns() {
 		// Open Source Folder CUBC
@@ -376,14 +376,14 @@ public class MainFrame extends JFrame {
 								setting.load(fr);
 								fr.close();
 								
-								// 取得輸出檔案名稱
+								// Getting the File Name of Output
 								File outputFile = new File(chooserOut.getSelectedFile(), codits+f_A.getName());
 								if (outputFile.exists()) {
 									String newFileName = dateFormat.format(new Date()) + " " + codits + f_A.getName();
 									outputFile = new File(chooserOut.getSelectedFile(), newFileName);
 								}
 								ta.append("Output file: " + outputFile + "\n");
-								// 轉換資料
+								// Start to transfer the Data.
 								ta.append("Initialize DataTransformer\n");
 								DataTransformer transformer = new DataTransformer(charsetName, setting, settingMsg, codits);
 								transformer.transform(f_A, f_B, outputFile);
@@ -506,7 +506,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * 將所選定的資料夾印路徑在畫面上
+	 * Display the Path of Folder that be choose in the View.
 	 */
 	private void printFolderPaths() {
 		ta.append("\n");
@@ -521,8 +521,8 @@ public class MainFrame extends JFrame {
 		ta.append("Output File Directory: " + chooserOut.getSelectedFile().getAbsolutePath());
 	}
 	/**
-	 * 將Exception印在畫面上
-	 * @param e - 要輸出的Exception
+	 * Display the Exception on the View.
+	 * @param e - Output Exception
 	 */
 	private void printException(Exception e) {
 		ta.append("\n");
